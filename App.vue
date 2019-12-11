@@ -2,6 +2,9 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			uni.setNavigationBarTitle({
+				title: '首页'
+			})
 		},
 		onShow: function() {
 			console.log('App Show')
