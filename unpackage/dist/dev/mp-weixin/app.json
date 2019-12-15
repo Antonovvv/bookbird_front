@@ -1,23 +1,27 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/sell/sell"
+    "pages/shop/shop",
+    "pages/shop/search",
+    "pages/sell/sell",
+    "pages/me/me",
+    "pages/cart/cart"
   ],
   "subPackages": [],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+    "navigationBarTitleText": "",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F8F8F8",
+    "navigationStyle": "custom"
   },
   "tabBar": {
     "color": "#7A7E83",
     "selectedColor": "#3cc51f",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/shop/shop",
         "iconPath": "static/monkey.jpg",
         "selectedIconPath": "static/monkey.jpg",
         "text": "首页"
@@ -27,9 +31,21 @@
         "iconPath": "static/monkey.jpg",
         "selectedIconPath": "static/monkey.jpg",
         "text": "卖书"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "iconPath": "static/monkey.jpg",
+        "selectedIconPath": "static/monkey.jpg",
+        "text": "购物车"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "iconPath": "static/monkey.jpg",
+        "selectedIconPath": "static/monkey.jpg",
+        "text": "我的"
       }
     ]
   },
   "usingComponents": {},
-  "sitemapLocation": "sitemap91.json"
+  "sitemapLocation": "sitemap79.json"
 }

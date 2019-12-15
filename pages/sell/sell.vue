@@ -11,6 +11,11 @@
 				
 			}
 		},
+		onLoad() {
+			uni.setNavigationBarTitle({
+				title: '卖书'
+			})
+		},
 		methods: {
 			
 		}

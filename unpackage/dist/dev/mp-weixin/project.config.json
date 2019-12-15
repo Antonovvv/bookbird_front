@@ -7,8 +7,8 @@
 		"urlCheck": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.7.0",
-	"appid": "wxa6c12ff0b6e68d29",
+	"libVersion": "2.9.2",
+	"appid": "wx2c9039d168dae712",
 	"projectname": "bookbird_front",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},

@@ -1,28 +1,36 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
-		},
-		{
-			"path": "pages/sell/sell"
-		}
-	],
+			"path": "pages/shop/shop",
+			"style": {}
+		}, {
+			"path": "pages/shop/search",
+			"style": {}
+		}, {
+			"path": "pages/sell/sell",
+			"style": {}
+		}, {
+            "path": "pages/me/me",
+            "style": {}
+        }, {
+            "path": "pages/cart/cart",
+            "style": {}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTitleText": "",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle": "custom"
 	},
 	"tabBar": {
 		"color": "#7A7E83",
 		"selectedColor": "#3cc51f",
-		"borderStyle": "black",
+		"borderStyle": "white",
 		"backgroundColor": "#ffffff",
 		"list": [{
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/shop/shop",
 			"iconPath": "static/monkey.jpg",
 			"selectedIconPath": "static/monkey.jpg",
 			"text": "首页"
@@ -31,6 +39,16 @@
 			"iconPath": "static/monkey.jpg",
 			"selectedIconPath": "static/monkey.jpg",
 			"text": "卖书"
+		}, {
+			"pagePath": "pages/cart/cart",
+			"iconPath": "static/monkey.jpg",
+			"selectedIconPath": "static/monkey.jpg",
+			"text": "购物车"
+		}, {
+			"pagePath": "pages/me/me",
+			"iconPath": "static/monkey.jpg",
+			"selectedIconPath": "static/monkey.jpg",
+			"text": "我的"
 		}]
 	}
 }
