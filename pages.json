@@ -15,7 +15,10 @@
         }, {
             "path": "pages/cart/cart",
             "style": {}
-        }
+        }, {
+			"path": "pages/detail/detail",
+			"style": {}
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

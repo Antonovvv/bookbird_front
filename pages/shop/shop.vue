@@ -1,8 +1,8 @@
 <template>
-	<view class="content">
+	<view class="container">
 		<image class="logo" src="../../static/微信图片_20191215001840.png"></image>
 		<view class="cu-bar">
-			<view class="search-form round search-bar">
+			<view class="search-form round search-box">
 				<text space="emsp">{{space}}</text>
 				<input @focus="inputFocus" @confirm="searchConfirm" :adjust-position="false" type="text" 
 				placeholder="搜索你想要的书籍" confirm-type="search"
@@ -14,7 +14,7 @@
 			<text class="try-text">{{tryTo}}</text>
 		</view>
 		<view class="try-button">
-			<button v-for="(item, index) in tryList" class="cu-btn round try-btn">{{item}}</button>
+			<button v-for="(item, index) in tryList" class="cu-btn round try-btn" @tap="trySearch(item)">{{item}}</button>
 		</view>
 	</view>
 </template>
@@ -45,6 +45,11 @@
 				uni.navigateTo({
 					url: 'search?text=' + encodeURIComponent(JSON.stringify(e.detail.value))
 				})
+			},
+			trySearch(text) {
+				uni.navigateTo({
+					url: 'search?text=' + encodeURIComponent(JSON.stringify(text))
+				})
 			}
 		}
 	}
@@ -54,7 +59,7 @@
 	body {
 		background-color: #F8F8F8;
 	}
-	.content {
+	.container {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
