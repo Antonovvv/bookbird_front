@@ -38,6 +38,10 @@
 	@import "colorui/main.css";
 	@import "colorui/icon.css";
 	/*每个页面公共css */
+	body {
+		background-color: #F8F8F8;
+	}
+	
 	.cu-bar .search-box {
 		height: 70rpx;
 		width: 700rpx;

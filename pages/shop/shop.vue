@@ -11,7 +11,7 @@
 			</view>
 		</view>
 		<view class="text-area">
-			<text class="try-text">{{tryTo}}</text>
+			<text class="try-text">您可以试试搜索</text>
 		</view>
 		<view class="try-button">
 			<button v-for="(item, index) in tryList" class="cu-btn round try-btn" @tap="trySearch(item)">{{item}}</button>
@@ -28,7 +28,6 @@
 		data() {
 			return {
 				space: ' ',
-				tryTo: '您可以试试搜索',
 				tryList: ['微积分', '电路理论', '微机原理', '毛概', '数理方程与特殊函数']
 			}
 		},
@@ -56,9 +55,6 @@
 </script>
 
 <style>
-	body {
-		background-color: #F8F8F8;
-	}
 	.container {
 		display: flex;
 		flex-direction: column;
@@ -85,7 +81,7 @@
 		margin-bottom: 18rpx;
 	}
 	
-	.tryto {
+	.try-text {
 		color: #727272;
 	}
 	

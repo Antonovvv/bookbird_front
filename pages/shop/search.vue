@@ -136,15 +136,13 @@
 	.search-bar {
 		z-index: 999;
 		position: fixed;
-		left: 0;
-		top: 150rpx;
 		box-sizing: border-box;
 	}
 	
 	.select-bar {
 		width: 100%;
 		position: fixed;
-		top: 250rpx;
+		margin-top: 100rpx;
 		z-index: 888;
 		box-sizing: border-box;
 	}
