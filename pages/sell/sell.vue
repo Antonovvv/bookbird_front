@@ -6,32 +6,13 @@
 		<!--卖书引导-->
 		<view class="guide-content">
 			<view class="guide-block">
+				<image src="../../static/guide.png" class="sell-guide-image"></image>
 			</view>
 		</view>
 		
-		<view class="upload-box">
+		<view class="action-box">
 			<button class="cu-btn round scan-button" @tap="scanQR">
 				<text class="cuIcon-scan scan-icon"></text><text space="ensp">{{space}}扫码卖书</text></button>
-		</view>
-		
-		<view class="cu-modal" :class="showResult?'show':''">
-			<view class="cu-dialog">
-				<image :src="bookResult.imgUrl" class="book-image" mode="aspectFit"/>
-				<view class="book-info">
-					<text class="book-name">{{bookResult.name}}</text>
-					<text class="book-info-text" space="emsp">作 者:{{bookResult.author}}</text>
-					<text class="book-info-text">出版社:{{bookResult.publisher}}</text>
-					<text class="book-info-text" space="emsp">原 价:{{bookResult.price}}</text>
-					<text class="book-info-text">出版时间:{{bookResult.pubdate}}</text>
-				</view>
-				<view class="confirm-box">
-					<text class="confirm-text">这是你要卖的书吗？</text>
-					<view class="confirm-button">
-						<button class="cu-btn round cancle" @tap="hideModal">不是</button>
-						<button class="cu-btn round confirm" @tap="confirm">是</button>
-					</view>
-				</view>
-			</view>
 		</view>
 	</view>
 </template>
@@ -40,38 +21,31 @@
 	export default {
 		data() {
 			return {
+				modalName: null,
 				space: ' ',
-				bookISBN: '',
-				showResult: false,
 				doubanUrl: "https://douban.uieee.com/v2/book/",
-				bookResult: {
-					imgUrl: "",
-					name: "",
-					author: "",
-					publisher: "",
-					price: 0,
-					pubdate: ""
-				}
 			}
 		},
 		onLoad() {
 			
 		},
 		methods: {
-			showModal() {
-				this.showResult = true
-			},
-			hideModal() {
-				this.showResult = false
-			},
+			
 			scanQR() {
 				var _this = this
 				uni.scanCode({
 					success: function (res) {
 						//console.log(res.result)
-						_this.bookISBN = res.result
+						uni.showLoading({})
 						_this.queryBook(res.result)
-						
+					},
+					fail: function () {
+						uni.showToast({
+							title: '无法识别条码',
+							duration: 3000,
+							icon: 'none'
+						})
+						console.log('scan fail')
 					}
 				})
 			},
@@ -84,18 +58,24 @@
 						'content-type': 'json'
 					},
 					success: function (res) {
-						_this.bookResult = {
-							imgUrl: res.data.image,
-							name: res.data.title,
-							author: res.data.author[0],
-							publisher: res.data.publisher,
-							price: res.data.price,
-							pubdate: res.data.pubdate
+						uni.hideLoading()
+						if(res.errMsg == "request:ok") {
+							console.log("剩余次数:", res.header['X-Ratelimit-Remaining2'])
+							uni.navigateTo({
+								url: "upload?book=" + encodeURIComponent(JSON.stringify(res.data))
+							})
 						}
-						_this.showModal()
+						else {
+							uni.showToast({
+								title: "豆瓣不理我们啦！",
+								duration: 3000,
+								icon: 'none'
+							})
+						}
 					}
 				})
-			}
+			},
+			
 		}
 	}
 </script>
@@ -111,7 +91,12 @@
 		margin: 100rpx 0;
 	}
 	
-	.upload-box {
+	.sell-guide-image {
+		width: 510rpx;
+		height: 756rpx;
+	}
+	
+	.action-box {
 		width: 100%;
 		height: 140rpx;
 		display: flex;
@@ -122,7 +107,7 @@
 		bottom: 50rpx;
 	}
 	
-	.upload-box .scan-button {
+	.action-box .scan-button {
 		width: 472rpx;
 		height: 102rpx;
 		background-color: #FF6E78;
@@ -134,54 +119,5 @@
 		font-size: 50rpx;
 	}
 	
-	.book-image {
-		width: 400rpx;
-		height: 500rpx;
-	}
 	
-	.book-info {
-		display: flex;
-		flex-direction: column;
-		flex-wrap: wrap;
-		align-items: flex-start;
-		padding: 10rpx 130rpx;
-	}
-	
-	.book-name {
-		font-size: 36rpx;
-		color: #727272;
-		margin-bottom: 20rpx;
-	}
-	
-	.book-info-text {
-		font-size: 28rpx;
-		color: #A1A1A1;
-	}
-	
-	.confirm-text {
-		font-size: 32rpx;
-		margin-bottom: 16rpx;
-	}
-	
-	.confirm-button {
-		margin: 20rpx 0;
-		justify-content: space-around;
-		display: flex;
-	}
-	
-	.confirm-button .confirm {
-		width: 280rpx;
-		height: 102rpx;
-		background-color: #FF6E78;
-		font-size: 42rpx;
-		color: #FFFFFF;
-	}
-	
-	.confirm-button .cancle {
-		width: 280rpx;
-		height: 102rpx;
-		background-color: #AAAAAA;
-		font-size: 42rpx;
-		color: #FFFFFF;
-	}
 </style>

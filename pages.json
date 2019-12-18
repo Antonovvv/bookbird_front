@@ -10,6 +10,9 @@
 			"path": "pages/sell/sell",
 			"style": {}
 		}, {
+			"path": "pages/sell/upload",
+			"style": {}
+		}, {
             "path": "pages/me/me",
             "style": {}
         }, {
