@@ -24,7 +24,7 @@
 		<view class="tui-product-list">
 			<view class="tui-product-container">
 				<block v-for="(item,index) in bookList" :key="index">
-					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150" @tap="detail(item.bookId)">
+					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150" @tap="detail(item)">
 						<image :src="item.img" class="tui-pro-img tui-proimg-list"
 						 mode="widthFix" />
 						<view class="tui-pro-content">
@@ -119,9 +119,9 @@
 			selectChange(e) {
 				this.selectCur = e.currentTarget.dataset.id
 			},
-			detail(id) {
+			detail(item) {
 				uni.navigateTo({
-					url: "../detail/detail?bookid=" + id
+					url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
 				})
 			}
 		}
@@ -186,7 +186,7 @@
 	
 	.tui-flex-list {
 		display: flex;
-		margin-bottom: 1rpx !important;
+		margin-bottom: 4rpx !important;
 	}
 	
 	.tui-pro-img {
