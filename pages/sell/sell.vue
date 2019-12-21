@@ -6,7 +6,18 @@
 		<!--卖书引导-->
 		<view class="guide-content">
 			<view class="guide-block">
-				<image src="../../static/guide.png" class="sell-guide-image"></image>
+				<view class="guide-item">
+					<image src="../../static/sell_pic1.png" class="guide-image"/>
+					<text class="guide-text">扫码看回收价</text>
+				</view>
+				<view class="guide-item">
+					<image src="../../static/sell_pic1.png" class="guide-image"/>
+					<text class="guide-text">上传一张照片</text>
+				</view>
+				<view class="guide-item">
+					<image src="../../static/sell_pic3.png" class="guide-image"/>
+					<text class="guide-text">卖书到账</text>
+				</view>
 			</view>
 		</view>
 		
@@ -82,18 +93,35 @@
 
 <style>
 	.guide-content {
+		margin-top: 20rpx;
 		display: flex;
-		flex-direction: column;
-		align-items: center;
 	}
 	
 	.guide-content .guide-block {
-		margin: 100rpx 0;
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
 	}
 	
-	.sell-guide-image {
-		width: 510rpx;
-		height: 756rpx;
+	.guide-item {
+		padding: 40rpx 100rpx 0 100rpx;
+		display: flex;
+		align-items: center;
+	}
+	
+	.guide-image {
+		width: 240rpx;
+		height: 240rpx;
+		background-color: #FFFFFF;
+		border: 1rpx solid #979797;
+		border-radius: 8rpx;
+	}
+	
+	.guide-text {
+		color: #727272;
+		font-size: 36rpx;
+		margin-left: 68rpx;
 	}
 	
 	.action-box {

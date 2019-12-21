@@ -11,7 +11,7 @@
 						color="#FFFFFF" class="round" style="transform: scale(0.85);"></checkbox>
 					</label>
 					<image :src="item.img" class="item-image" mode="aspectFit" @tap="detail(item)"/>
-					<view class="item-content" @tap="detail(item.bookId)">
+					<view class="item-content" @tap="detail(item)">
 						<view class="item-title">{{item.name}}</view>
 						<view class="item-info">{{item.author}} 著/{{item.pulisher}}</view>
 						<view class="item-tags">
@@ -63,9 +63,9 @@
 						checked: true
 					},
 					{
-						name: "微积分",
+						name: "飞鸟集",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社",
@@ -75,7 +75,7 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社",
@@ -85,7 +85,7 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社",

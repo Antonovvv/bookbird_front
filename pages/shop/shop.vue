@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
-		<image class="logo" src="../../static/微信图片_20191215001840.png"></image>
+		<image class="background-image" src="../../static/bgimg.jpg" mode="aspectFill"></image>
+		<image class="logo" src="../../static/shop_logo.png"></image>
 		<view class="cu-bar">
 			<view class="search-form round search-box">
 				<text space="emsp">{{space}}</text>
@@ -55,12 +56,25 @@
 </script>
 
 <style>
+	page {
+		height: 100%;
+	}
+	
 	.container {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 	}
-
+	
+	.background-image {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		background-size: 100% 100%;
+		z-index: -1;
+	}
+	
 	.logo {
 		height: 264rpx;
 		width: 264rpx;

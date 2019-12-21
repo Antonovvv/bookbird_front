@@ -58,7 +58,7 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/logo.png",
+						img: "../../static/book.png",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社"
@@ -66,7 +66,15 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/logo.png",
+						img: "../../static/book.png",
+						sale: 6.00,
+						author: "李军",
+						pulisher: "上海译文出版社"
+					},
+					{
+						name: "电路理论",
+						bookId: "",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社"
@@ -74,7 +82,7 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社"
@@ -82,28 +90,20 @@
 					{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
-						sale: 6.00,
-						author: "李军",
-						pulisher: "上海译文出版社"
-					},
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社"
 					},{
 						name: "微积分",
 						bookId: "",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
 						pulisher: "上海译文出版社"
 					},{
 						name: "微积分",
-						img: "../../static/微信图片_20191215001850.jpg",
+						img: "../../static/bird_logo.jpg",
 						bookId: "",
 						sale: 6.00,
 						author: "李军",

@@ -37,23 +37,23 @@
 		"backgroundColor": "#ffffff",
 		"list": [{
 			"pagePath": "pages/shop/shop",
-			"iconPath": "static/food.png",
-			"selectedIconPath": "static/food.png",
+			"iconPath": "static/shop_icon_default.png",
+			"selectedIconPath": "static/shop_icon.png",
 			"text": "首页"
 		}, {
 			"pagePath": "pages/sell/sell",
-			"iconPath": "static/food.png",
-			"selectedIconPath": "static/food.png",
+			"iconPath": "static/sell_icon_default.png",
+			"selectedIconPath": "static/sell_icon.png",
 			"text": "卖书"
 		}, {
 			"pagePath": "pages/cart/cart",
-			"iconPath": "static/food.png",
-			"selectedIconPath": "static/food.png",
+			"iconPath": "static/cart_icon_default.png",
+			"selectedIconPath": "static/cart_icon.png",
 			"text": "购物车"
 		}, {
 			"pagePath": "pages/me/me",
-			"iconPath": "static/food.png",
-			"selectedIconPath": "static/food.png",
+			"iconPath": "static/bird_icon.png",
+			"selectedIconPath": "static/me_icon.png",
 			"text": "我的"
 		}]
 	}
