@@ -1,24 +1,27 @@
 <template>
 	<view class="container">
-		<cu-custom bgColor="bg-white">
+		<y-navbar bgColor="bg-white" leftMode="edit">
+			<block slot="editText" @tap="edit">编辑</block>
+			<block slot="confirmText" @tap="editConfirm">完成</block>
 			<block slot="content">购物车</block>
-		</cu-custom>
+		</y-navbar>
 		<checkbox-group @change="checkboxChange">
 			<view class="cart-box">
 				<view class="cart-item" v-for="(item, index) in cartList" :key="index">
 					<label class="item-checkbox">
-						<checkbox :value="index" :checked="item.checked"
-						color="#FFFFFF" class="round" style="transform: scale(0.85);"></checkbox>
+						<checkbox :value="index" :checked="item.checked" :disabled="!item.valid"
+						class="round book-red" :class="item.valid?'':'invalid'" style="transform: scale(0.85);" />
 					</label>
 					<image :src="item.img" class="item-image" mode="aspectFit" @tap="detail(item)"/>
 					<view class="item-content" @tap="detail(item)">
-						<view class="item-title">{{item.name}}</view>
-						<view class="item-info">{{item.author}} 著/{{item.pulisher}}</view>
+						<view class="item-title" :class="item.valid?'':'invalid'">{{item.name}}</view>
+						<view class="item-info" :class="item.valid?'':'invalid'">{{item.author}} 著/{{item.publisher}}</view>
 						<view class="item-tags">
-							<view class="item-price">￥{{item.sale.toFixed(2)}}</view>
-							<view class="item-addr">
+							<view class="item-price" v-if="item.valid">￥{{item.sale.toFixed(2)}}</view>
+							<view class="item-addr" v-if="item.valid">
 								<text class="cuIcon-location"></text>{{item.addr}}
 							</view>
+							<view class="item-invalid" v-if="!item.valid">已失效</view>
 						</view>
 					</view>
 				</view>
@@ -30,17 +33,19 @@
 			<view class="checkAll">
 				<checkbox-group @change="checkAll">
 					<label class="checkAll-box">
-						<checkbox value=""
-						color="#FFFFFF" class="round" style="transform: scale(0.96);"></checkbox>
+						<checkbox value="" class="round book-red" style="transform: scale(0.96);" />
 						<text class="checkAll-text">全选</text>
 					</label>
 				</checkbox-group>
 			</view>
-			<view class="total-price">
+			<view class="total-price" v-if="!inEdit">
 				合计:<text class="total">￥{{totalPrice.toFixed(2)}}</text> 
 			</view>
-			<view>
+			<view v-if="!inEdit">
 				<button class="cu-btn round pay-button" @tap="pay">结算</button>
+			</view>
+			<view v-if="inEdit">
+				<button class="cu-btn round del-button" @tap="editDelete">删除</button>
 			</view>
 		</view>
 	</view>
@@ -51,6 +56,7 @@
 		data() {
 			return {
 				allChecked: false,
+				inEdit: false,
 				cartList: [
 					{
 						name: "微积分",
@@ -58,9 +64,10 @@
 						img: "../../static/book.png",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社",
+						publisher: "上海译文出版社",
 						addr: '韵苑23栋',
-						checked: true
+						checked: true,
+						valid: true
 					},
 					{
 						name: "飞鸟集",
@@ -68,9 +75,10 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社",
+						publisher: "上海译文出版社",
 						addr: '韵苑23栋',
-						checked: false
+						checked: false,
+						valid: false
 					},
 					{
 						name: "微积分",
@@ -78,9 +86,10 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社",
+						publisher: "上海译文出版社",
 						addr: '韵苑23栋',
-						checked: false
+						checked: false,
+						valid: true
 					},
 					{
 						name: "微积分",
@@ -88,9 +97,10 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社",
+						publisher: "上海译文出版社",
 						addr: '韵苑23栋',
-						checked: false
+						checked: false,
+						valid: true
 					}
 				]
 			}
@@ -113,10 +123,28 @@
 			
 		},
 		methods: {
+			edit() {
+				this.inEdit = true
+			},
+			editConfirm() {
+				this.inEdit = false
+			},
+			editDelete() {
+				for (let item of this.cartList) {
+					if (item.checked) {
+						var index = this.cartList.indexOf(item)
+						if (index > -1) {
+							this.cartList.splice(index, 1)
+						}
+					}
+				}
+			},
 			detail(item) {
-				uni.navigateTo({
-					url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
-				})
+				if (item.valid) {
+					uni.navigateTo({
+						url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
+					})
+				}
 			},
 			checkboxChange(e) {
 				var checkedList = e.detail.value;
@@ -130,8 +158,10 @@
 			},
 			checkAll(e) {
 				this.allChecked = !this.allChecked
-				for (let i in this.cartList) {
-					this.$set(this.cartList[i], 'checked', this.allChecked)
+				for (let item of this.cartList) {
+					if (item.valid) {
+						this.$set(item, 'checked', this.allChecked)
+					}
 				}
 			},
 			pay() {
@@ -168,12 +198,21 @@
 		display: flex;
 	}
 	
-	.item-checkbox {
+	.item-checkbox {/*label中的checkbox*/
 		padding: 0 20rpx;
 		display: flex;
 		align-items: center;
 	}
-	/*label中的checkbox*/
+	
+	checkbox.book-red[checked] .wx-checkbox-input,
+	checkbox.book-red.checked .uni-checkbox-input {
+		background-color: #FF6E78 !important;
+		border-color: #FF6E78 !important;
+	}
+	
+	checkbox.invalid::before {
+		content: "";
+	}
 	
 	.item-image {
 		width: 200rpx;
@@ -216,6 +255,16 @@
 		margin-left: 100rpx;
 		font-size: 28rpx;
 		color: #727272;
+	}
+	
+	.item-invalid {
+		color: #7C7C7C;
+		font-size: 28rpx;
+		margin-top: 55rpx;
+	}
+	
+	.item-title.invalid, .item-info.invalid {
+		color: #B1B1B1;
 	}
 	
 	/*tabbar*/
@@ -280,5 +329,14 @@
 		background-color: #FF6E78;
 		font-size: 42rpx;
 		color: #FFFFFF;
+	}
+	
+	.cart-tabbar .del-button {
+		width: 170rpx;
+		height: 70rpx;
+		border: 2rpx solid #FF6174;
+		background-color: #FFFFFF;
+		font-size: 42rpx;
+		color: #FF6174;
 	}
 </style>

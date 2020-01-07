@@ -16,7 +16,7 @@
 		<!--searchBar-->
 		<!--selectBar-->
 		<view class="bg-white nav select-bar">
-			<view class="select-item cu-item" :class="index==selectCur?'selected':''" v-for="(item, index) in selectItems"
+			<view class="select-item cu-item" :class="index==selectCur?'selected':''" v-for="(item, index) in selectItems" :key="index"
 			@tap="selectChange" :data-id="index">{{item}}</view>
 		</view>
 		<!--selectBar-->
@@ -29,7 +29,7 @@
 						 mode="widthFix" />
 						<view class="tui-pro-content">
 							<view class="tui-pro-tit">{{item.name}}</view>
-							<view class="book-info">{{item.author}} 著/{{item.pulisher}}</view>
+							<view class="book-info">{{item.author}} 著/{{item.publisher}}</view>
 							<view class="book-tags">
 								<view class="tui-pro-price">
 									<text class="book-price">￥{{item.sale.toFixed(2)}}</text>
@@ -61,7 +61,7 @@
 						img: "../../static/book.png",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},
 					{
 						name: "微积分",
@@ -69,7 +69,7 @@
 						img: "../../static/book.png",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},
 					{
 						name: "电路理论",
@@ -77,7 +77,7 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},
 					{
 						name: "微积分",
@@ -85,7 +85,7 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},
 					{
 						name: "微积分",
@@ -93,21 +93,21 @@
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},{
 						name: "微积分",
 						bookId: "",
 						img: "../../static/bird_logo.jpg",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					},{
 						name: "微积分",
 						img: "../../static/bird_logo.jpg",
 						bookId: "",
 						sale: 6.00,
 						author: "李军",
-						pulisher: "上海译文出版社"
+						publisher: "上海译文出版社"
 					}
 				]
 			}

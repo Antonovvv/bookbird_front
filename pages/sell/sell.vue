@@ -1,20 +1,23 @@
 <template>
 	<view>
 		<cu-custom bgColor="bg-white">
-			<block slot="content">卖书</block>
+			<block slot="content">卖书给BookBird</block>
 		</cu-custom>
 		<!--卖书引导-->
 		<view class="guide-content">
 			<view class="guide-block">
 				<view class="guide-item">
+					<text class="guide-index">1</text>
 					<image src="../../static/sell_pic1.png" class="guide-image"/>
 					<text class="guide-text">扫码看回收价</text>
 				</view>
 				<view class="guide-item">
+					<text class="guide-index">2</text>
 					<image src="../../static/sell_pic1.png" class="guide-image"/>
 					<text class="guide-text">上传一张照片</text>
 				</view>
 				<view class="guide-item">
+					<text class="guide-index">3</text>
 					<image src="../../static/sell_pic3.png" class="guide-image"/>
 					<text class="guide-text">卖书到账</text>
 				</view>
@@ -35,6 +38,7 @@
 				modalName: null,
 				space: ' ',
 				doubanUrl: "https://douban.uieee.com/v2/book/",
+				serverUrl: "https://www.bookbird.cn/api/mp/book/"
 			}
 		},
 		onLoad() {
@@ -63,15 +67,16 @@
 			queryBook(code) {
 				var _this = this
 				uni.request({
-					url: _this.doubanUrl + "isbn/" + code,
+					url: _this.serverUrl + "isbn/" + code,
 					//header[content-type]默认为application/json，请求会被拒绝
 					header: {
 						'content-type': 'json'
 					},
 					success: function (res) {
 						uni.hideLoading()
-						if(res.errMsg == "request:ok") {
-							console.log("剩余次数:", res.header['X-Ratelimit-Remaining2'])
+						console.log(res)
+						if(res.statusCode == 200) {
+							//console.log("剩余次数:", res.header['X-Ratelimit-Remaining2'])
 							uni.navigateTo({
 								url: "upload?book=" + encodeURIComponent(JSON.stringify(res.data))
 							})
@@ -83,6 +88,9 @@
 								icon: 'none'
 							})
 						}
+					},
+					fail: function() {
+						uni.hideLoading()
 					}
 				})
 			},
@@ -105,14 +113,20 @@
 	}
 	
 	.guide-item {
-		padding: 40rpx 100rpx 0 100rpx;
+		padding: 40rpx 96rpx 0 58rpx;
 		display: flex;
 		align-items: center;
 	}
 	
+	.guide-index {
+		color: #5F8C48;
+		font-size: 66rpx;
+		margin-right: 31rpx;
+	}
+	
 	.guide-image {
-		width: 240rpx;
-		height: 240rpx;
+		width: 230rpx;
+		height: 230rpx;
 		background-color: #FFFFFF;
 		border: 1rpx solid #979797;
 		border-radius: 8rpx;
@@ -121,7 +135,7 @@
 	.guide-text {
 		color: #727272;
 		font-size: 36rpx;
-		margin-left: 68rpx;
+		margin-left: 76rpx;
 	}
 	
 	.action-box {

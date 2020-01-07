@@ -15,7 +15,7 @@
 			<text class="try-text">您可以试试搜索</text>
 		</view>
 		<view class="try-button">
-			<button v-for="(item, index) in tryList" class="cu-btn round try-btn" @tap="trySearch(item)">{{item}}</button>
+			<button v-for="(item, index) in tryList" :key="index" class="cu-btn round try-btn" @tap="trySearch(item)">{{item}}</button>
 		</view>
 	</view>
 </template>
@@ -28,7 +28,7 @@
 		},
 		data() {
 			return {
-				space: ' ',
+				space: '  ',
 				tryList: ['微积分', '电路理论', '微机原理', '毛概', '数理方程与特殊函数']
 			}
 		},
@@ -61,14 +61,15 @@
 	}
 	
 	.container {
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		/*justify-content: center;*/
 	}
 	
 	.background-image {
 		width: 100%;
-		height: 100%;
+		height: 110%;
 		position: absolute;
 		top: 0;
 		background-size: 100% 100%;
@@ -78,15 +79,20 @@
 	.logo {
 		height: 264rpx;
 		width: 264rpx;
-		margin-top: 180rpx;
+		margin-top: 116rpx;
 		margin-left: auto;
 		margin-right: auto;
-		margin-bottom: 90rpx;
+		margin-bottom: 66rpx;
 		border-radius: 132rpx;
 	}
+	
+	.container .cu-bar {
+		min-height: auto;
+	}
 
-	.search {
+	.cu-bar .search-form .search {
 		background-color: #FFFFFF;
+		font-size: 32rpx;
 	}
 	
 	.text-area {

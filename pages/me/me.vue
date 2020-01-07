@@ -31,7 +31,7 @@
 <style>
 	.background-image {
 		width: 100%;
-		height: 100%;
+		height: 110%;
 		position: absolute;
 		top: 0;
 		background-size: 100% 100%;
