@@ -130,12 +130,9 @@
 				this.inEdit = false
 			},
 			editDelete() {
-				for (let item of this.cartList) {
-					if (item.checked) {
-						var index = this.cartList.indexOf(item)
-						if (index > -1) {
-							this.cartList.splice(index, 1)
-						}
+				for (let i = this.cartList.length - 1; i >= 0; i--) {
+					if (this.cartList[i].checked) {
+						this.cartList.splice(i, 1)
 					}
 				}
 			},

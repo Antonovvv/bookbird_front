@@ -17,26 +17,33 @@
 		<!--selectBar-->
 		<view class="bg-white nav select-bar">
 			<view class="select-item cu-item" :class="index==selectCur?'selected':''" v-for="(item, index) in selectItems" :key="index"
-			@tap="selectChange" :data-id="index">{{item}}</view>
+			@tap="selectChange" :data-id="index">
+				{{item}}
+				<text :class="orderPriceAscend?'cuIcon-triangleupfill':'cuIcon-triangledownfill'" v-if="index==1 && selectCur==1"></text>
+				<text :class="orderNewAscend?'cuIcon-triangleupfill':'cuIcon-triangledownfill'" v-if="index==3 && selectCur==3"></text>
+			</view>
 		</view>
 		<!--selectBar-->
 		<!--bookList-->
 		<view class="tui-product-list">
 			<view class="tui-product-container">
 				<block v-for="(item,index) in bookList" :key="index">
-					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150" @tap="detail(item)">
+					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150">
 						<image :src="item.img" class="tui-pro-img tui-proimg-list"
-						 mode="widthFix" />
-						<view class="tui-pro-content">
+						 mode="widthFix"  @tap="detail(item)"/>
+						<view class="tui-pro-content" @tap="detail(item)">
 							<view class="tui-pro-tit">{{item.name}}</view>
 							<view class="book-info">{{item.author}} 著/{{item.publisher}}</view>
 							<view class="book-tags">
 								<view class="tui-pro-price">
 									<text class="book-price">￥{{item.sale.toFixed(2)}}</text>
 								</view>
-								<view class="cu-tag radius book-tag">五成</view>
-								<view class="cu-tag radius book-tag">韵苑23栋</view>
+								<view class="cu-tag radius book-tag">{{newLevel[item.new]}}</view>
+								<view class="cu-tag radius book-tag">{{item.dorm}}</view>
 							</view>
+						</view>
+						<view class="product-add" @tap="addToCart(item.bookId)">
+							<text class="cuIcon-add"></text>
 						</view>
 					</view>
 				</block>
@@ -54,75 +61,148 @@
 				searchText: '',
 				selectCur: 0,
 				selectItems: ['综合', '价格', '距离', '成色'],
+				orderPriceAscend: true,
+				orderNewAscend: false,
+				newLevel: ['五成', '七成', '九成', '全新'],
 				bookList:[
 					{
 						name: "微积分",
 						bookId: "",
 						img: "../../static/book.png",
-						sale: 6.00,
+						sale: 4.00,
 						author: "李军",
-						publisher: "上海译文出版社"
+						publisher: "上海译文出版社",
+						new: 2,
+						dorm: "韵苑23栋"
 					},
 					{
 						name: "微积分",
 						bookId: "",
 						img: "../../static/book.png",
-						sale: 6.00,
+						sale: 4.50,
 						author: "李军",
-						publisher: "上海译文出版社"
+						publisher: "上海译文出版社",
+						new: 3,
+						dorm: "韵苑21栋"
 					},
 					{
 						name: "电路理论",
 						bookId: "",
 						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社"
+						sale: 4.00,
+						author: "汪健",
+						publisher: "清华大学出版社",
+						new: 1,
+						dorm: "韵苑11栋"
 					},
 					{
-						name: "微积分",
+						name: "通信电子线路",
 						bookId: "",
 						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社"
+						sale: 6.50,
+						author: "严国萍",
+						publisher: "科学出版社",
+						new: 2,
+						dorm: "韵苑23栋"
 					},
 					{
-						name: "微积分",
+						name: "数据结构",
 						bookId: "",
 						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社"
+						sale: 5.50,
+						author: "严蔚敏",
+						publisher: "清华大学出版社",
+						new: 1,
+						dorm: "韵苑7栋"
 					},{
-						name: "微积分",
+						name: "计算机网络",
 						bookId: "",
 						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社"
+						sale: 9.50,
+						author: "吴功宜",
+						publisher: "清华大学出版社",
+						new: 2,
+						dorm: "韵苑16栋"
 					},{
-						name: "微积分",
+						name: "电磁场与电磁波",
 						img: "../../static/bird_logo.jpg",
 						bookId: "",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社"
+						sale: 3.00,
+						author: "沈熙宁",
+						publisher: "科学出版社",
+						new: 0,
+						dorm: "韵苑19栋"
 					}
 				]
 			}
+		},
+		computed: {
+			
 		},
 		onLoad(option) {
 			this.searchText = JSON.parse(decodeURIComponent(option.text))
 		},
 		methods: {
+			sortBy(attr, order) {
+				//按参数排序，默认升序
+				if(order == undefined) {
+					order = 1
+				} else {
+					order = order ? 1 : -1
+				}
+				return function(item1, item2) {
+					let a = item1[attr];
+					let b = item2[attr];
+					if(a < b) {
+						return -1 * order
+					}
+					else if(a > b) {
+						return order
+					}
+					return 0
+				}
+			},
 			selectChange(e) {
-				this.selectCur = e.currentTarget.dataset.id
+				if (this.selectCur == e.currentTarget.dataset.id) {//重复点击同类排序
+					if (this.selectCur == 1) {//按价格排序
+						this.orderPriceAscend = !this.orderPriceAscend
+						this.bookList.sort(this.sortBy('sale', this.orderPriceAscend))
+					}
+					else if (this.selectCur == 3) {//按成色排序
+						this.orderNewAscend = !this.orderNewAscend
+						this.bookList.sort(this.sortBy('new', this.orderNewAscend))
+					}
+				} else {//首次点击排序
+					this.selectCur = e.currentTarget.dataset.id//改变光标
+					switch (this.selectCur){
+						case 0:
+							//
+							break;
+						case 1://按价格排序，默认升序
+							this.orderPriceAscend = true
+							this.bookList.sort(this.sortBy('sale', this.orderPriceAscend))
+							break;
+						case 2:
+							//
+							break;
+						case 3://按成色排序，默认降序
+							this.orderNewAscend = false
+							this.bookList.sort(this.sortBy('new', this.orderNewAscend))
+							break;
+						default:
+							break;
+					}
+				}
 			},
 			detail(item) {
 				uni.navigateTo({
 					url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
 				})
+			},
+			addToCart(item) {
+				uni.showToast({
+					title: '加入购物车'
+				});
 			}
 		}
 	}
@@ -148,6 +228,7 @@
 	}
 	.nav .select-item {
 		height: 70rpx;
+		width: 80rpx;
 		line-height: 70rpx;
 		margin: 0 20rpx;
 	}
@@ -260,5 +341,18 @@
 		padding-top: 10rpx;
 		font-size: 24rpx;
 		color: #656565;
+	}
+	
+	.product-add {
+		margin: auto 34rpx auto auto;
+		width: 66rpx;
+		height: 66rpx;
+		border-radius: 50%;
+		background-color: #FFABB0;
+		color: #FFFFFF;
+		font-size: 56rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
