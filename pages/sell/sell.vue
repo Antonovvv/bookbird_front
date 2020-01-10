@@ -52,7 +52,7 @@
 					success: function (res) {
 						//console.log(res.result)
 						uni.showLoading({})
-						_this.queryBook(res.result)
+						_this.queryBook(res.result)//扫码得到isbn码，提交查询
 					},
 					fail: function () {
 						uni.showToast({

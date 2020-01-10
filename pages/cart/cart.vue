@@ -9,8 +9,8 @@
 			<view class="cart-box">
 				<view class="cart-item" v-for="(item, index) in cartList" :key="index">
 					<label class="item-checkbox">
-						<checkbox :value="index" :checked="item.checked" :disabled="!item.valid"
-						class="round book-red" :class="item.valid?'':'invalid'" style="transform: scale(0.85);" />
+						<checkbox :value="index" :checked="item.checked" :disabled="(!item.valid) && (!inEdit)"
+						class="round book-red" :class="(item.valid || inEdit) ?'':'invalid'" style="transform: scale(0.85);" />
 					</label>
 					<image :src="item.img" class="item-image" mode="aspectFit" @tap="detail(item)"/>
 					<view class="item-content" @tap="detail(item)">
@@ -127,6 +127,11 @@
 				this.inEdit = true
 			},
 			editConfirm() {
+				for (let item of this.cartList) {
+					if (!item.valid) {//已失效商品在编辑中被选中，完成编辑时置为未选中
+						item.checked = false
+					}
+				}
 				this.inEdit = false
 			},
 			editDelete() {
