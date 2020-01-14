@@ -19,8 +19,10 @@
 				
 			}
 		},
-		onLoad() {
-			
+		onReady() {
+			/*uni.navigateTo({
+				url: 'login'
+			})*/
 		},
 		methods: {
 			
@@ -31,7 +33,7 @@
 <style>
 	.background-image {
 		width: 100%;
-		height: 110%;
+		height: 100%;
 		position: absolute;
 		top: 0;
 		background-size: 100% 100%;

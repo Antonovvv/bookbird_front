@@ -16,6 +16,9 @@
             "path": "pages/me/me",
             "style": {}
         }, {
+			"path": "pages/me/login",
+			"style": {}
+		}, {
             "path": "pages/cart/cart",
             "style": {}
         }, {

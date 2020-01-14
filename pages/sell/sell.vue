@@ -25,7 +25,7 @@
 		</view>
 		
 		<view class="action-box">
-			<button class="cu-btn round scan-button" @tap="scanQR">
+			<button class="cu-btn round scan-button" @tap="test">
 				<text class="cuIcon-scan scan-icon"></text><text space="ensp">{{space}}扫码卖书</text></button>
 		</view>
 	</view>
@@ -37,15 +37,16 @@
 			return {
 				modalName: null,
 				space: ' ',
-				doubanUrl: "https://douban.uieee.com/v2/book/",
-				serverUrl: "https://www.bookbird.cn/api/mp/book/"
+				doubanUrl: "https://douban.uieee.com/v2/book/"
 			}
 		},
 		onLoad() {
 			
 		},
 		methods: {
-			
+			test() {
+				this.queryBook(9787115320339)
+			},
 			scanQR() {
 				var _this = this
 				uni.scanCode({
@@ -67,11 +68,8 @@
 			queryBook(code) {
 				var _this = this
 				uni.request({
-					url: _this.serverUrl + "isbn/" + code,
+					url: _this.global.serverUrl + "book/isbn/" + code + '/',
 					//header[content-type]默认为application/json，请求会被拒绝
-					header: {
-						'content-type': 'json'
-					},
 					success: function (res) {
 						uni.hideLoading()
 						console.log(res)
@@ -91,6 +89,11 @@
 					},
 					fail: function() {
 						uni.hideLoading()
+						uni.showToast({
+							title: "请求失败",
+							duration: 3000,
+							icon: 'none'
+						})
 					}
 				})
 			},

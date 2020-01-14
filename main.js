@@ -7,7 +7,11 @@ import yNavbar from './components/y-navbar/y-navbar.vue'
 Vue.component('y-navbar', yNavbar)
 
 Vue.config.productionTip = false
-
+Vue.prototype.global = {
+	serverUrl: "https://www.bookbird.cn/api/mp/",
+	nickname: '',
+	openid: 'test'
+}
 App.mpType = 'app'
 
 const app = new Vue({

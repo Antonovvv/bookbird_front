@@ -32,14 +32,14 @@
 			<view class="image-uploader">
 			<!--布局-->
 				<!--已选图片-->
-				<view class="image-box" @tap="viewImage" v-if="bookImage">
-					<image :src="bookImage" mode="aspectFill" class="picture"></image>
+				<view class="image-box" @tap="viewImage" v-if="postImage">
+					<image :src="postImage" mode="aspectFill" class="picture"></image>
 					<view class="cu-tag bg-red cancle-tag" @tap.stop="deleteImage">
 						<text class='cuIcon-close'></text>
 					</view>
 				</view>
 				<!--相机图标-->
-				<view class="camera-box" @tap="chooseImage" v-if="!bookImage">
+				<view class="camera-box" @tap="chooseImage" v-if="!postImage">
 					<text class="cuIcon-cameraadd camera-icon"></text>
 				</view>
 			</view>
@@ -50,7 +50,7 @@
 				
 			</view>
 			<view class="price-box">
-				<text>价格：￥{{bookPrice.toFixed(2)}}</text>
+				<text>价格：￥{{sellPrice.toFixed(2)}}</text>
 			</view>
 			<view>
 				<view class="confirm-button">
@@ -63,13 +63,13 @@
 </template>
 
 <script>
+	const qiniu = require("../../utils/qiniu.js");
 	export default {
 		data() {
 			return {
 				modalName: null,
 				space: ' ',
-				bookISBN: '',
-				doubanUrl: "https://douban.uieee.com/v2/book/",
+				//doubanUrl: "https://douban.uieee.com/v2/book/",
 				bookResult: {
 					imgUrl: "",
 					name: "",
@@ -79,8 +79,9 @@
 					price: 0,
 					pubdate: ""
 				},
-				bookImage: "",
-				bookPrice: 5
+				postImage: "",
+				backImageUrl: "",
+				sellPrice: 5
 			}
 		},
 		onLoad(option) {
@@ -111,29 +112,94 @@
 			},
 			chooseImage() {
 				var _this = this
-				if(!this.bookImage) {
+				if(!this.postImage) {
 					uni.chooseImage({
 						count: 1,
 						sourceType: ['camera', 'album'],
 						success: function (res) {
-							_this.bookImage = res.tempFilePaths[0]
+							_this.postImage = res.tempFilePaths[0]
 						}
 					})
 				}
 			},
 			viewImage() {
 				uni.previewImage({
-					urls: [this.bookImage]
+					urls: [this.postImage]
 				})
 			},
 			deleteImage() {
-				this.bookImage = ""
+				this.postImage = ""
 			},
 			back() {
 				uni.navigateBack({})
 			},
 			post() {
-				uni.navigateBack({})
+				//uni.navigateBack({})
+				var _this = this
+				console.log('isbn', _this.bookResult.ISBN)
+				uni.request({
+					url: _this.global.serverUrl + "post/",
+					method: 'POST',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						bookName: _this.bookResult.name,
+						price: _this.sellPrice,
+						new: 2,
+						description: 'test',
+						ISBN: _this.bookResult.ISBN,
+						openid: _this.global.openid
+					},
+					success: function (res) {
+						if (res.statusCode == 200) {
+							var token = res.data.token;
+							var key = res.data.key
+							//console.log(token)
+							if (token && token.length > 0) {
+								_this.imageUpload(token, key)
+							}
+						}
+						else if (res.statusCode == 404) {
+							uni.showToast({
+								title: "找不到这本书",
+								duration: 3000,
+								icon: 'none'
+							})
+						}
+						else {
+							console.log('request for token faild')
+						}
+					},
+					fail: function (error) {
+						console.error('request for token faild')
+					}
+				})
+			},
+			imageUpload(token, key) {
+				var options = {
+					region: 'ECN',
+					domain: 'q3vy3pdtr.bkt.clouddn.com',
+					uptoken: token,
+					key: key
+				}
+				var _this = this
+				qiniu.upload(
+					this.postImage,
+					(res) => {
+						_this.backImageUrl = res.imageUrl
+						console.log('file url is: ' + res.fileUrl);
+					},
+					(error) => {
+						console.log('error: ' + error);
+					},
+					options,
+					(progress) => {
+						console.log('上传进度', progress.progress)
+						console.log('已经上传的数据长度', progress.totalBytesSent)
+						console.log('预期需要上传的数据总长度', progress.totalBytesExpectedToSend)
+					}
+				)
 			}
 		}
 	}
