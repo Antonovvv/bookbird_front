@@ -42,31 +42,33 @@
 					provider: 'weixin',
 					success: function (res) {
 						var code = res.code
-						console.log(res);
+						//console.log(code);
+						uni.request({
+							url: _this.global.serverUrl + "user/login",
+							data: {
+								code: code
+							},
+							success: function (res) {
+								//console.log(res.data);
+								var token = res.data.token
+								_this.global.token = token
+								uni.setStorage({
+									key: 'token',
+									data: token,
+									success() {
+										console.log('storaged token: ' + token);
+									}
+								})
+							},
+							fail: function (error) {
+								console.log(error);
+							}
+						})
 					},
 					fail: function (error) {
 						console.log(error);
 					}
 				});
-				uni.request({
-					url: this.global.serverUrl + "user/",
-					method: 'POST',
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					data: {
-						openid: 'test',
-						name: 'test',
-						studentId: 'test',
-						dorm: 'test'
-					},
-					success: function (res) {
-						console.log(res);
-					},
-					fail: function (error) {
-						console.log(error);
-					}
-				})
 			}
 		}
 	}

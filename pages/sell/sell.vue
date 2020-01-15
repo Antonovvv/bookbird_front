@@ -25,7 +25,7 @@
 		</view>
 		
 		<view class="action-box">
-			<button class="cu-btn round scan-button" @tap="test">
+			<button class="cu-btn round scan-button" @tap="scanQR">
 				<text class="cuIcon-scan scan-icon"></text><text space="ensp">{{space}}扫码卖书</text></button>
 		</view>
 	</view>

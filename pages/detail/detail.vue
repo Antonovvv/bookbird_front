@@ -14,7 +14,7 @@
 			}
 		},
 		onLoad(option) {
-			this.title = option.name
+			this.title = option.bookName
 		},
 		methods: {
 			

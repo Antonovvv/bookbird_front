@@ -137,6 +137,7 @@
 				//uni.navigateBack({})
 				var _this = this
 				console.log('isbn', _this.bookResult.ISBN)
+				var token = uni.getStorageSync('token')
 				uni.request({
 					url: _this.global.serverUrl + "post/",
 					method: 'POST',
@@ -149,7 +150,7 @@
 						new: 2,
 						description: 'test',
 						ISBN: _this.bookResult.ISBN,
-						openid: _this.global.openid
+						token: token
 					},
 					success: function (res) {
 						if (res.statusCode == 200) {
@@ -187,8 +188,13 @@
 				qiniu.upload(
 					this.postImage,
 					(res) => {
-						_this.backImageUrl = res.imageUrl
-						console.log('file url is: ' + res.fileUrl);
+						_this.backImageUrl = res.imageURL
+						//console.log('file url is: ' + res.fileUrl);
+						uni.showToast({
+							title: '上传成功',
+							duration: 3000
+						})
+						uni.navigateBack({})
 					},
 					(error) => {
 						console.log('error: ' + error);
@@ -196,8 +202,8 @@
 					options,
 					(progress) => {
 						console.log('上传进度', progress.progress)
-						console.log('已经上传的数据长度', progress.totalBytesSent)
-						console.log('预期需要上传的数据总长度', progress.totalBytesExpectedToSend)
+						//console.log('已经上传的数据长度', progress.totalBytesSent)
+						//console.log('预期需要上传的数据总长度', progress.totalBytesExpectedToSend)
 					}
 				)
 			}

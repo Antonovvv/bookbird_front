@@ -7,7 +7,7 @@
 		<view class="cu-bar bg-white search-bar">
 			<view class="search-form round search-box">
 				<text space="emsp">{{space}}</text>
-				<input @confirm="searchConfirm" :adjust-position="false" type="text" 
+				<input @confirm="searchConfirm" @input="searchInput" :adjust-position="false" type="text" 
 				:value="searchText" confirm-type="search"
 				class="search"/>
 				<text class="cuIcon-search"></text>
@@ -29,10 +29,10 @@
 			<view class="tui-product-container">
 				<block v-for="(item,index) in bookList" :key="index">
 					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150">
-						<image :src="item.img" class="tui-pro-img tui-proimg-list"
+						<image :src="item.imageUrl" class="tui-pro-img tui-proimg-list"
 						 mode="widthFix"  @tap="detail(item)"/>
 						<view class="tui-pro-content" @tap="detail(item)">
-							<view class="tui-pro-tit">{{item.name}}</view>
+							<view class="tui-pro-tit">{{item.bookName}}</view>
 							<view class="book-info">{{item.author}} 著/{{item.publisher}}</view>
 							<view class="book-tags">
 								<view class="tui-pro-price">
@@ -64,76 +64,7 @@
 				orderPriceAscend: true,
 				orderNewAscend: false,
 				newLevel: ['五成', '七成', '九成', '全新'],
-				bookList:[
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/book.png",
-						sale: 4.00,
-						author: "李军",
-						publisher: "上海译文出版社",
-						new: 2,
-						dorm: "韵苑23栋"
-					},
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/book.png",
-						sale: 4.50,
-						author: "李军",
-						publisher: "上海译文出版社",
-						new: 3,
-						dorm: "韵苑21栋"
-					},
-					{
-						name: "电路理论",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 4.00,
-						author: "汪健",
-						publisher: "清华大学出版社",
-						new: 1,
-						dorm: "韵苑11栋"
-					},
-					{
-						name: "通信电子线路",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 6.50,
-						author: "严国萍",
-						publisher: "科学出版社",
-						new: 2,
-						dorm: "韵苑23栋"
-					},
-					{
-						name: "数据结构",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 5.50,
-						author: "严蔚敏",
-						publisher: "清华大学出版社",
-						new: 1,
-						dorm: "韵苑7栋"
-					},{
-						name: "计算机网络",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 9.50,
-						author: "吴功宜",
-						publisher: "清华大学出版社",
-						new: 2,
-						dorm: "韵苑16栋"
-					},{
-						name: "电磁场与电磁波",
-						img: "../../static/bird_logo.jpg",
-						bookId: "",
-						sale: 3.00,
-						author: "沈熙宁",
-						publisher: "科学出版社",
-						new: 0,
-						dorm: "韵苑19栋"
-					}
-				]
+				bookList: []
 			}
 		},
 		computed: {
@@ -142,7 +73,40 @@
 		onLoad(option) {
 			this.searchText = JSON.parse(decodeURIComponent(option.text))
 		},
+		onShow() {
+			this.search(this.searchText)
+		},
 		methods: {
+			searchInput(e) {
+				this.searchText = e.detail.value
+			},
+			searchConfirm() {
+				this.search(this.searchText)
+			},
+			search(text) {
+				var _this = this
+				if (text == '') {
+					uni.showToast({
+						title: '搜索内容不能为空哦',
+						duration: 3000,
+						icon: 'none'
+					})
+				} else {
+					uni.request({
+						url: this.global.serverUrl + "post",
+						data: {
+							bookName: text
+						},
+						success: function (res) {
+							console.log(res.data.searchRes);
+							_this.bookList = res.data.searchRes
+							for (let item of _this.bookList) {
+								item.imageUrl = _this.global.bucketUrl + item.imageName
+							}
+						}
+					})
+				}
+			},
 			sortBy(attr, order) {
 				//按参数排序，默认升序
 				if(order == undefined) {
@@ -196,7 +160,7 @@
 			},
 			detail(item) {
 				uni.navigateTo({
-					url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
+					url: "../detail/detail?bookid=" + item.bookId + "&bookName=" + item.bookName
 				})
 			},
 			addToCart(item) {
