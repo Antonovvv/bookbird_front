@@ -42,7 +42,7 @@
 								<view class="cu-tag radius book-tag">{{item.dorm}}</view>
 							</view>
 						</view>
-						<view class="product-add" @tap="addToCart(item.bookId)">
+						<view class="product-add" @tap="addToCart(item)">
 							<text class="cuIcon-add"></text>
 						</view>
 					</view>
@@ -98,10 +98,19 @@
 							bookName: text
 						},
 						success: function (res) {
-							console.log(res.data.searchRes);
-							_this.bookList = res.data.searchRes
-							for (let item of _this.bookList) {
-								item.imageUrl = _this.global.bucketUrl + item.imageName
+							if (res.statusCode == 200) {
+								console.log(res.data.searchRes);
+								_this.bookList = res.data.searchRes
+								for (let item of _this.bookList) {
+									item.imageUrl = _this.global.bucketUrl + item.imageName
+								}
+							}
+							else {
+								uni.showToast({
+									title: '暂时没有',
+									duration: 3000,
+									icon: 'none'
+								})
 							}
 						}
 					})
@@ -164,9 +173,40 @@
 				})
 			},
 			addToCart(item) {
-				uni.showToast({
-					title: '加入购物车'
-				});
+				var _this = this
+				var token = uni.getStorageSync('token')
+				uni.request({
+					url: this.global.serverUrl + "user/cart",
+					method: 'POST',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						token: token,
+						postId: item.postId
+					},
+					success: function (res) {
+						if (res.statusCode == 201) {
+							uni.showToast({
+								title: '加入购物车'
+							});
+						}
+						else if (res.statusCode == 403) {
+							uni.showToast({
+								title: '已经在购物车中了！',
+								duration: 3000,
+								icon: 'none'
+							});
+						}
+						else {
+							console.log('add fail');
+						}
+					},
+					fail: function (error) {
+						console.error(error)
+					}
+				})
+				
 			}
 		}
 	}

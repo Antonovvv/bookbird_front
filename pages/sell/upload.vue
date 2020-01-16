@@ -135,47 +135,55 @@
 			},
 			post() {
 				//uni.navigateBack({})
-				var _this = this
-				console.log('isbn', _this.bookResult.ISBN)
-				var token = uni.getStorageSync('token')
-				uni.request({
-					url: _this.global.serverUrl + "post/",
-					method: 'POST',
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					data: {
-						bookName: _this.bookResult.name,
-						price: _this.sellPrice,
-						new: 2,
-						description: 'test',
-						ISBN: _this.bookResult.ISBN,
-						token: token
-					},
-					success: function (res) {
-						if (res.statusCode == 200) {
-							var token = res.data.token;
-							var key = res.data.key
-							//console.log(token)
-							if (token && token.length > 0) {
-								_this.imageUpload(token, key)
+				if (this.postImage == "") {
+					uni.showToast({
+						title: "请添加照片",
+						duration: 3000,
+						icon: 'none'
+					})
+				} else {
+					console.log('isbn', this.bookResult.ISBN)
+					var _this = this
+					var token = uni.getStorageSync('token')
+					uni.request({
+						url: _this.global.serverUrl + "post",
+						method: 'POST',
+						header: {
+							'content-type': 'application/x-www-form-urlencoded'
+						},
+						data: {
+							bookName: _this.bookResult.name,
+							price: _this.sellPrice,
+							new: 2,
+							description: 'test',
+							ISBN: _this.bookResult.ISBN,
+							token: token
+						},
+						success: function (res) {
+							if (res.statusCode == 201) {
+								var token = res.data.upToken;
+								var key = res.data.key
+								//console.log(token)
+								if (token && token.length > 0) {
+									_this.imageUpload(token, key)
+								}
 							}
+							else if (res.statusCode == 404) {
+								uni.showToast({
+									title: "找不到这本书",
+									duration: 3000,
+									icon: 'none'
+								})
+							}
+							else {
+								console.log('request for token faild')
+							}
+						},
+						fail: function (error) {
+							console.error('request for token faild')
 						}
-						else if (res.statusCode == 404) {
-							uni.showToast({
-								title: "找不到这本书",
-								duration: 3000,
-								icon: 'none'
-							})
-						}
-						else {
-							console.log('request for token faild')
-						}
-					},
-					fail: function (error) {
-						console.error('request for token faild')
-					}
-				})
+					})
+				}
 			},
 			imageUpload(token, key) {
 				var options = {

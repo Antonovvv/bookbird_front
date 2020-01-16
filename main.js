@@ -83,6 +83,52 @@ Vue.prototype.test = {
 						new: 0,
 						dorm: "韵苑19栋"
 					}
+				],
+	cartList: [
+					{
+						name: "微积分",
+						bookId: "",
+						img: "../../static/book.png",
+						sale: 6.00,
+						author: "李军",
+						publisher: "上海译文出版社",
+						addr: '韵苑23栋',
+						checked: true,
+						valid: true
+					},
+					{
+						name: "飞鸟集",
+						bookId: "",
+						img: "../../static/bird_logo.jpg",
+						sale: 6.00,
+						author: "李军",
+						publisher: "上海译文出版社",
+						addr: '韵苑23栋',
+						checked: false,
+						valid: false
+					},
+					{
+						name: "微积分",
+						bookId: "",
+						img: "../../static/bird_logo.jpg",
+						sale: 6.00,
+						author: "李军",
+						publisher: "上海译文出版社",
+						addr: '韵苑23栋',
+						checked: false,
+						valid: true
+					},
+					{
+						name: "微积分",
+						bookId: "",
+						img: "../../static/bird_logo.jpg",
+						sale: 6.00,
+						author: "李军",
+						publisher: "上海译文出版社",
+						addr: '韵苑23栋',
+						checked: false,
+						valid: true
+					}
 				]
 }
 App.mpType = 'app'

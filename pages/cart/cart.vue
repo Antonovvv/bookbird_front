@@ -12,9 +12,9 @@
 						<checkbox :value="index" :checked="item.checked" :disabled="(!item.valid) && (!inEdit)"
 						class="round book-red" :class="(item.valid || inEdit) ?'':'invalid'" style="transform: scale(0.85);" />
 					</label>
-					<image :src="item.img" class="item-image" mode="aspectFit" @tap="detail(item)"/>
+					<image :src="item.imageUrl" class="item-image" mode="aspectFit" @tap="detail(item)"/>
 					<view class="item-content" @tap="detail(item)">
-						<view class="item-title" :class="item.valid?'':'invalid'">{{item.name}}</view>
+						<view class="item-title" :class="item.valid?'':'invalid'">{{item.bookName}}</view>
 						<view class="item-info" :class="item.valid?'':'invalid'">{{item.author}} 著/{{item.publisher}}</view>
 						<view class="item-tags">
 							<view class="item-price" v-if="item.valid">￥{{item.sale.toFixed(2)}}</view>
@@ -57,52 +57,7 @@
 			return {
 				allChecked: false,
 				inEdit: false,
-				cartList: [
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/book.png",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社",
-						addr: '韵苑23栋',
-						checked: true,
-						valid: true
-					},
-					{
-						name: "飞鸟集",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社",
-						addr: '韵苑23栋',
-						checked: false,
-						valid: false
-					},
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社",
-						addr: '韵苑23栋',
-						checked: false,
-						valid: true
-					},
-					{
-						name: "微积分",
-						bookId: "",
-						img: "../../static/bird_logo.jpg",
-						sale: 6.00,
-						author: "李军",
-						publisher: "上海译文出版社",
-						addr: '韵苑23栋',
-						checked: false,
-						valid: true
-					}
-				]
+				cartList: []
 			}
 		},
 		computed: {
@@ -119,8 +74,32 @@
 				return sum;
 			}
 		},
-		onLoad() {
-			
+		onShow() {
+			this.inEdit = false
+			var _this = this
+			var token = uni.getStorageSync('token')
+			uni.request({
+				url: this.global.serverUrl + "user/cart",
+				data: {
+					token: token
+				},
+				success: function (res) {
+					if (res.statusCode == 200) {
+						console.log(res.data.cartList);
+						_this.cartList = res.data.cartList
+						for (let item of _this.cartList) {
+							item.imageUrl = _this.global.bucketUrl + item.imageName
+						}
+					} else {
+						uni.showToast({
+							title: '购物车为空',
+							duration: 3000,
+							icon: 'none'
+						})
+					}
+					
+				}
+			})
 		},
 		methods: {
 			edit() {
@@ -135,11 +114,31 @@
 				this.inEdit = false
 			},
 			editDelete() {
+				var deleteList = []
 				for (let i = this.cartList.length - 1; i >= 0; i--) {
 					if (this.cartList[i].checked) {
-						this.cartList.splice(i, 1)
+						deleteList.push(this.cartList[i].cartItemId)
 					}
 				}
+				var _this = this
+				uni.request({
+					url: this.global.serverUrl + "user/cart",
+					method: 'DELETE',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						deleteList: deleteList
+					},
+					success: function (res) {
+						console.log(res.data);
+						for (let i = _this.cartList.length - 1; i >= 0; i--) {
+							if (_this.cartList[i].checked) {
+								_this.cartList.splice(i, 1)
+							}
+						}
+					}
+				})
 			},
 			detail(item) {
 				if (item.valid) {

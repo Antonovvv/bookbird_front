@@ -5,7 +5,7 @@
 		<view class="cu-bar">
 			<view class="search-form round search-box">
 				<text space="emsp">{{space}}</text>
-				<input @focus="inputFocus" @confirm="searchConfirm" :adjust-position="false" type="text" 
+				<input @focus="inputFocus" @confirm="searchConfirm" v-model="searchText" :adjust-position="false" type="text" 
 				placeholder="搜索你想要的书籍" confirm-type="search"
 				class="search"/>
 				<text class="cuIcon-search"></text>
@@ -29,6 +29,7 @@
 		data() {
 			return {
 				space: '  ',
+				searchText: '',
 				tryList: ['微积分', '电路理论', '微机原理', '毛概', '数理方程与特殊函数']
 			}
 		},
@@ -36,6 +37,9 @@
 			uni.setNavigationBarTitle({
 				title: '首页'
 			})
+		},
+		onShow() {
+			this.searchText = ''
 		},
 		methods: {
 			inputFocus() {
