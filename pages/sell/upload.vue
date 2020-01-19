@@ -1,11 +1,13 @@
 <template>
 	<view>
-		<cu-custom bgColor="bg-white">
+		<cu-custom bgColor="bg-white" :isBack="true">
+			<block slot="backText"></block>
 			<block slot="content">卖书</block>
 		</cu-custom>
 		<!--扫码结果-->
 		<view class="cu-modal" :class="modalName=='scanResult'?'show':''">
-			<view class="cu-dialog">
+			<view class="cu-dialog confirm-modal">
+				<text class="confirm-title">这是你要卖的书吗？</text>
 				<image :src="bookResult.imgUrl" class="book-image" mode="aspectFit"/>
 				<view class="book-info">
 					<text class="book-info-name">{{bookResult.name}}</text>
@@ -14,12 +16,9 @@
 					<text class="book-info-text" space="emsp">原 价:{{bookResult.price}}</text>
 					<text class="book-info-text">出版时间:{{bookResult.pubdate}}</text>
 				</view>
-				<view class="confirm-box">
-					<text class="confirm-text">这是你要卖的书吗？</text>
-					<view class="confirm-button">
-						<button class="cu-btn round cancle" @tap="cancle">不是</button>
-						<button class="cu-btn round confirm" @tap="confirm">是</button>
-					</view>
+				<view class="confirm-button">
+					<button class="cu-btn round cancle" @tap="cancle">不是</button>
+					<button class="cu-btn round confirm" @tap="confirm">是</button>
 				</view>
 			</view>
 		</view>
@@ -44,19 +43,21 @@
 				</view>
 			</view>
 			
-			
 			<view class="book-name">{{bookResult.name}}</view>
 			<view class="info-box">
-				
-			</view>
-			<view class="price-box">
-				<text>价格：￥{{sellPrice.toFixed(2)}}</text>
-			</view>
-			<view>
-				<view class="confirm-button">
-					<button class="cu-btn round cancle" @tap="back">返回</button>
-					<button class="cu-btn round confirm" @tap="post">确定</button>
+				<text class="info-new-text">书籍成色</text>
+				<view class="info-new-bar">
+					<view class="cu-tag round info-new-tag"  v-for="(tag, index) in newTags" :key="index" 
+					:class="(newTagSelected == index) ? 'tag-selected' : ''" @tap="newSelect(index)">{{tag}}</view>
 				</view>
+				<view class="info-price-bar">
+					<text class="info-price-text">价格</text>
+					<text class="info-price">￥{{sellPrice.toFixed(2)}}</text>
+				</view>
+			</view>
+			<view class="post-confirm">
+				<button class="cu-btn round confirm-btn" :class="confirmAllowed ? 'allowed' : ''"
+				@tap="post">确定</button>
 			</view>
 		</view>
 	</view>
@@ -81,7 +82,14 @@
 				},
 				postImage: "",
 				backImageUrl: "",
+				newTags: ["九九新", "九成新", "七成新", "五成新"],
+				newTagSelected: -1,
 				sellPrice: 5
+			}
+		},
+		computed: {
+			confirmAllowed() {
+				return (this.postImage && (this.newTagSelected >= 0)) ? true : false
 			}
 		},
 		onLoad(option) {
@@ -130,6 +138,9 @@
 			deleteImage() {
 				this.postImage = ""
 			},
+			newSelect(index) {
+				this.newTagSelected = index
+			},
 			back() {
 				uni.navigateBack({})
 			},
@@ -141,7 +152,15 @@
 						duration: 3000,
 						icon: 'none'
 					})
-				} else {
+				}
+				else if (this.newTagSelected < 0) {
+					uni.showToast({
+						title: "请选择书籍成色",
+						duration: 3000,
+						icon: 'none'
+					})
+				}
+				else {
 					console.log('isbn', this.bookResult.ISBN)
 					var _this = this
 					var token = uni.getStorageSync('token')
@@ -154,7 +173,7 @@
 						data: {
 							bookName: _this.bookResult.name,
 							price: _this.sellPrice,
-							new: 2,
+							new: 3 - _this.newTagSelected,
 							description: 'test',
 							ISBN: _this.bookResult.ISBN,
 							token: token
@@ -221,9 +240,16 @@
 
 <style>
 	/*书本确认modal*/
+	.cu-modal .confirm-modal {
+		width: 600rpx;
+		min-height: 960rpx;
+	}
+	
 	.book-image {
-		width: 400rpx;
-		height: 500rpx;
+		width: 340rpx;
+		height: 440rpx;
+		position: relative;
+		top: 60rpx;
 	}
 	
 	.book-info {
@@ -231,7 +257,9 @@
 		flex-direction: column;
 		flex-wrap: wrap;
 		align-items: flex-start;
-		padding: 10rpx 130rpx;
+		padding: 10rpx 130rpx 10rpx 70rpx;
+		position: relative;
+		top: 50rpx;
 	}
 	
 	.book-info-name {
@@ -245,30 +273,33 @@
 		color: #A1A1A1;
 	}
 	
-	.confirm-text {
-		font-size: 32rpx;
-		margin-bottom: 16rpx;
+	.confirm-title {
+		font-size: 40rpx;
+		top: 40rpx;
+		position: relative;
 	}
 	
 	.confirm-button {
 		margin: 20rpx 0;
 		justify-content: space-around;
 		display: flex;
+		position: relative;
+		top: 60rpx;
 	}
 	
 	.confirm-button .confirm {
-		width: 280rpx;
-		height: 102rpx;
+		width: 208rpx;
+		height: 80rpx;
 		background-color: #FF6E78;
-		font-size: 42rpx;
+		font-size: 40rpx;
 		color: #FFFFFF;
 	}
 	
 	.confirm-button .cancle {
-		width: 280rpx;
-		height: 102rpx;
+		width: 208rpx;
+		height: 80rpx;
 		background-color: #AAAAAA;
-		font-size: 42rpx;
+		font-size: 40rpx;
 		color: #FFFFFF;
 	}
 	/*主界面*/
@@ -283,14 +314,13 @@
 	
 	.camera-text-bar {
 		width: 100%;
-		padding-top: 40rpx;
-		padding-bottom: 10rpx;
+		padding: 40rpx 0;
+		text-align: center;
 	}
 	
 	.camera-text {
 		font-size: 42rpx;
 		color: #727272;
-		margin-left: 70rpx;
 	}
 	
 	.image-uploader {
@@ -302,6 +332,11 @@
 	
 	.image-box {
 		position: absolute;
+		width: 250rpx;
+		height: 250rpx;
+		border: 1rpx solid #FFFFFF;
+		border-radius: 18rpx;
+		overflow: hidden;
 	}
 	
 	.picture {
@@ -313,7 +348,7 @@
 		position: absolute;
 		right: 0;
 		top: 0;
-		border-bottom-left-radius: 6upx;
+		border-radius: 0 18rpx;
 		padding: 6upx 12upx;
 		height: auto;
 		background-color: rgba(0, 0, 0, 0.5);
@@ -362,17 +397,68 @@
 	}
 	
 	.info-box {
-		width: 600rpx;
 		height: 350rpx;
-		border-radius: 18rpx;
-		background-color: #F1F1F1;
-		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.info-new-text {
+		margin: 20rpx 45rpx;
+		font-size: 32rpx;
+		color: #727272;
 	}
 	
-	.price-box {
-		padding: 40rpx;
-		text-align: center;
-		font-size: 40rpx;
+	.info-new-bar {
+		padding: 0 40rpx;
+		display: flex;
+		justify-content: center;
+	}
+	
+	.info-box .info-new-bar .info-new-tag {
+		width: 150rpx;
+		height: 54rpx;
+		border: 2rpx solid #FF6E78;
+		background-color: #FFFFFF;
+		color: #FF6E78;
+		margin: 0 auto;
+		font-size: 28rpx;
+	}
+	
+	.info-new-bar .info-new-tag.tag-selected {
+		background-color: #FF6E78;
+		color: #FFFFFF;
+	}
+	
+	.info-price-bar {
+		padding: 50rpx 45rpx;
+		display: flex;
+		align-items: center;
+	}
+	.info-price-text {
 		color: #727272;
+		font-size: 32rpx;
+	}
+	.info-price {
+		color: #FF8F97;
+		font-size: 48rpx;
+		position: absolute;
+		right: 45rpx;
+	}
+	
+	.post-confirm {
+		width: 100%;
+		position: absolute;
+		bottom: 80rpx;
+		text-align: center;
+	}
+	.post-confirm .confirm-btn {
+		width: 500rpx;
+		height: 100rpx;
+		background-color: #AAAAAA;
+		color: #FFFFFF;
+		font-size: 40rpx;
+	}
+	.post-confirm .confirm-btn.allowed {
+		background-color: #FF6E78;
 	}
 </style>

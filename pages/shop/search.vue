@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<cu-custom bgColor="bg-white">
+		<cu-custom bgColor="bg-white" :isBack="true">
 			<block slot="content">搜索</block>
 		</cu-custom>
 		<!--searchBar-->
@@ -39,7 +39,7 @@
 									<text class="book-price">￥{{item.sale.toFixed(2)}}</text>
 								</view>
 								<view class="cu-tag radius book-tag">{{newLevel[item.new]}}</view>
-								<view class="cu-tag radius book-tag">{{item.dorm}}</view>
+								<view class="cu-tag radius book-tag">{{item.addr}}</view>
 							</view>
 						</view>
 						<view class="product-add" @tap="addToCart(item)">
@@ -106,6 +106,7 @@
 								}
 							}
 							else {
+								_this.bookList = []
 								uni.showToast({
 									title: '暂时没有',
 									duration: 3000,
@@ -169,7 +170,7 @@
 			},
 			detail(item) {
 				uni.navigateTo({
-					url: "../detail/detail?bookid=" + item.bookId + "&bookName=" + item.bookName
+					url: "../detail/detail?post=" + encodeURIComponent(JSON.stringify(item)) 
 				})
 			},
 			addToCart(item) {
@@ -194,7 +195,7 @@
 						else if (res.statusCode == 403) {
 							uni.showToast({
 								title: '已经在购物车中了！',
-								duration: 3000,
+								duration: 1500,
 								icon: 'none'
 							});
 						}

@@ -40,8 +40,8 @@
 				doubanUrl: "https://douban.uieee.com/v2/book/"
 			}
 		},
-		onLoad() {
-			
+		onShow() {
+			//console.log(this.StatusBar, this.CustomBar);
 		},
 		methods: {
 			test() {

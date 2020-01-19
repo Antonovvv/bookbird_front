@@ -78,28 +78,44 @@
 			this.inEdit = false
 			var _this = this
 			var token = uni.getStorageSync('token')
-			uni.request({
-				url: this.global.serverUrl + "user/cart",
-				data: {
-					token: token
-				},
-				success: function (res) {
-					if (res.statusCode == 200) {
-						console.log(res.data.cartList);
-						_this.cartList = res.data.cartList
-						for (let item of _this.cartList) {
-							item.imageUrl = _this.global.bucketUrl + item.imageName
+			if (token) {
+				uni.request({
+					url: this.global.serverUrl + "user/cart",
+					data: {
+						token: token
+					},
+					success: function (res) {
+						if (res.statusCode == 200) {
+							console.log(res.data.cartList);
+							_this.cartList = res.data.cartList
+							for (let item of _this.cartList) {
+								item.imageUrl = _this.global.bucketUrl + item.imageName
+							}
 						}
-					} else {
-						uni.showToast({
-							title: '购物车为空',
-							duration: 3000,
-							icon: 'none'
-						})
+						else if (res.statusCode == 404) {
+							uni.showToast({
+								title: '购物车为空',
+								duration: 3000,
+								icon: 'none'
+							})
+						}
+						else if (res.statusCode == 403) {
+							uni.showToast({
+								title: 'token过期，请重新进入小程序',
+								duration: 3000,
+								icon: 'none'
+							})
+						}
 					}
-					
-				}
-			})
+				})
+			} else {
+				uni.showToast({
+					title: '未登录',
+					duration: 3000,
+					icon: 'none'
+				})
+			}
+			
 		},
 		methods: {
 			edit() {
@@ -143,7 +159,7 @@
 			detail(item) {
 				if (item.valid) {
 					uni.navigateTo({
-						url: "../detail/detail?bookid=" + item.bookId + "&name=" + item.name
+						url: "../detail/detail?post=" + encodeURIComponent(JSON.stringify(item))
 					})
 				}
 			},

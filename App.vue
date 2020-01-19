@@ -7,6 +7,9 @@
 		},
 		onShow: function() {
 			console.log('App Show')
+			if ((!this.StatusBar) || (!this.CustomBar)) {
+				this.initNav()
+			}
 		},
 		onHide: function() {
 			console.log('App Hide')
@@ -15,6 +18,8 @@
 			initNav() {
 				uni.getSystemInfo({
 					success: function(e) {
+						//console.log(e.statusBarHeight);
+						/*
 						// #ifndef MP
 						Vue.prototype.StatusBar = e.statusBarHeight;
 						if (e.platform == 'android') {
@@ -23,16 +28,25 @@
 							Vue.prototype.CustomBar = e.statusBarHeight + 45;
 						};
 						// #endif
+						*/
+						
 						// #ifdef MP-WEIXIN
 						Vue.prototype.StatusBar = e.statusBarHeight;
-						let custom = wx.getMenuButtonBoundingClientRect();
-						Vue.prototype.Custom = custom;
-						Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-						// #endif       
+						setTimeout(function() {
+							let custom = wx.getMenuButtonBoundingClientRect();
+							Vue.prototype.Custom = custom;
+							Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
+						}, 100)
+						
+						//console.log(this.StatusBar, this.CustomBar);
+						// #endif
+						
 						// #ifdef MP-ALIPAY
 						Vue.prototype.StatusBar = e.statusBarHeight;
 						Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
 						// #endif
+						
+						//console.log(this.StatusBar, this.CustomBar);
 					}
 				})
 			},
@@ -50,15 +64,23 @@
 							},
 							success: function (res) {
 								//console.log(res.data);
-								var token = res.data.token
-								_this.global.token = token
-								uni.setStorage({
-									key: 'token',
-									data: token,
-									success() {
-										console.log('storaged token: ' + token);
-									}
-								})
+								if (res.statusCode == 200 || res.statusCode == 201) {
+									var token = res.data.token
+									_this.global.token = token
+									uni.setStorage({
+										key: 'token',
+										data: token,
+										success() {
+											console.log('storaged token: ' + token);
+										}
+									})
+								} else {
+									uni.showToast({
+										title: '获取用户失败！请重新进入小程序',
+										duration: 3000,
+										icon: 'none'
+									})
+								}
 							},
 							fail: function (error) {
 								console.log(error);
