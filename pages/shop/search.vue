@@ -170,7 +170,7 @@
 			},
 			detail(item) {
 				uni.navigateTo({
-					url: "../detail/detail?post=" + encodeURIComponent(JSON.stringify(item)) 
+					url: "../detail/detail?postInfo=" + encodeURIComponent(JSON.stringify(item)) 
 				})
 			},
 			addToCart(item) {

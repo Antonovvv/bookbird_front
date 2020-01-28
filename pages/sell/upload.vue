@@ -57,7 +57,7 @@
 			</view>
 			<view class="post-confirm">
 				<button class="cu-btn round confirm-btn" :class="confirmAllowed ? 'allowed' : ''"
-				@tap="post">确定</button>
+				@tap="post" :loading="isUploading" :disabled="isUploading">确定</button>
 			</view>
 		</view>
 	</view>
@@ -84,7 +84,8 @@
 				backImageUrl: "",
 				newTags: ["九九新", "九成新", "七成新", "五成新"],
 				newTagSelected: -1,
-				sellPrice: 5
+				sellPrice: 5,
+				isUploading: false
 			}
 		},
 		computed: {
@@ -147,23 +148,14 @@
 			post() {
 				//uni.navigateBack({})
 				if (this.postImage == "") {
-					uni.showToast({
-						title: "请添加照片",
-						duration: 3000,
-						icon: 'none'
-					})
-				}
-				else if (this.newTagSelected < 0) {
-					uni.showToast({
-						title: "请选择书籍成色",
-						duration: 3000,
-						icon: 'none'
-					})
-				}
-				else {
+					uni.showToast({title: "请添加照片", duration: 3000, icon: 'none'})
+				} else if (this.newTagSelected < 0) {
+					uni.showToast({title: "请选择书籍成色", duration: 3000, icon: 'none'})
+				} else {
 					console.log('isbn', this.bookResult.ISBN)
 					var _this = this
 					var token = uni.getStorageSync('token')
+					this.isUploading = true
 					uni.request({
 						url: _this.global.serverUrl + "post",
 						method: 'POST',
@@ -188,18 +180,17 @@
 								}
 							}
 							else if (res.statusCode == 404) {
-								uni.showToast({
-									title: "找不到这本书",
-									duration: 3000,
-									icon: 'none'
-								})
+								uni.showToast({title: "找不到这本书", duration: 3000, icon: 'none'})
+								_this.isUploading = false
 							}
 							else {
 								console.log('request for token faild')
+								_this.isUploading = false
 							}
 						},
 						fail: function (error) {
 							console.error('request for token faild')
+							_this.isUploading = false
 						}
 					})
 				}
@@ -221,7 +212,10 @@
 							title: '上传成功',
 							duration: 3000
 						})
-						uni.navigateBack({})
+						setTimeout(function() {
+							_this.isUploading = false
+							uni.navigateBack({})
+						}, 1500)
 					},
 					(error) => {
 						console.log('error: ' + error);

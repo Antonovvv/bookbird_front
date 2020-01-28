@@ -92,28 +92,16 @@
 								item.imageUrl = _this.global.bucketUrl + item.imageName
 							}
 						}
-						else if (res.statusCode == 404) {
-							uni.showToast({
-								title: '购物车为空',
-								duration: 3000,
-								icon: 'none'
-							})
+						else if (res.statusCode == 204) {
+							uni.showToast({title: '购物车为空', duration: 3000, icon: 'none'})
 						}
 						else if (res.statusCode == 403) {
-							uni.showToast({
-								title: 'token过期，请重新进入小程序',
-								duration: 3000,
-								icon: 'none'
-							})
+							uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
 						}
 					}
 				})
 			} else {
-				uni.showToast({
-					title: '未登录',
-					duration: 3000,
-					icon: 'none'
-				})
+				uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
 			}
 			
 		},
@@ -159,7 +147,7 @@
 			detail(item) {
 				if (item.valid) {
 					uni.navigateTo({
-						url: "../detail/detail?post=" + encodeURIComponent(JSON.stringify(item))
+						url: "../detail/detail?postInfo=" + encodeURIComponent(JSON.stringify(item))
 					})
 				}
 			},

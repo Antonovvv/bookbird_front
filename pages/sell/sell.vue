@@ -48,22 +48,38 @@
 				this.queryBook(9787115320339)
 			},
 			scanQR() {
-				var _this = this
-				uni.scanCode({
-					success: function (res) {
-						//console.log(res.result)
-						uni.showLoading({})
-						_this.queryBook(res.result)//扫码得到isbn码，提交查询
-					},
-					fail: function () {
-						uni.showToast({
-							title: '无法识别条码',
-							duration: 3000,
-							icon: 'none'
-						})
-						console.log('scan fail')
-					}
-				})
+				if (this.global.isAuthorized) {
+					var _this = this
+					uni.scanCode({
+						success: function (res) {
+							//console.log(res.result)
+							uni.showLoading({})
+							_this.queryBook(res.result)//扫码得到isbn码，提交查询
+						},
+						fail: function () {
+							uni.showToast({
+								title: '无法识别条码',
+								duration: 3000,
+								icon: 'none'
+							})
+							console.log('scan fail')
+						}
+					})
+				} else {
+					var _this = this
+					uni.showModal({
+						title: '提示',
+						content: '你还没有进行校园身份认证',
+						confirmText: '去认证',
+						success: function (res) {
+							if (res.confirm) {
+								uni.navigateTo({
+									url: '../me/auth?authorized=' + _this.global.isAuthorized
+								})
+							}
+						}
+					})
+				}
 			},
 			queryBook(code) {
 				var _this = this

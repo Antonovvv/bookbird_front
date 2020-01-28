@@ -48,11 +48,11 @@
 			}
 		},
 		onLoad(option) {
-			const post = JSON.parse(decodeURIComponent(option.post))
-			if (!post.postId) {
+			const postInfo = JSON.parse(decodeURIComponent(option.postInfo))
+			if (!postInfo.postId) {
 				this.inCart = true
 			}
-			this.postInfo = post
+			this.postInfo = postInfo
 			this.postInfo.imageUrl = this.global.bucketUrl + post.imageName
 		},
 		methods: {
@@ -96,9 +96,26 @@
 				}
 			},
 			buy() {
-				uni.showToast({
-					title: '订单确认页面'
-				})
+				if (this.global.isAuthorized) {
+					uni.navigateTo({
+						url: "../order/buy?postInfo=" + encodeURIComponent(JSON.stringify(this.postInfo))
+					})
+				} else {
+					var _this = this
+					uni.showModal({
+						title: '提示',
+						content: '你还没有进行校园身份认证',
+						confirmText: '去认证',
+						success: function (res) {
+							if (res.confirm) {
+								uni.navigateTo({
+									url: '../me/auth?authorized=' + _this.global.isAuthorized
+								})
+							}
+						}
+					})
+				}
+				
 			},
 			backHome() {
 				uni.switchTab({

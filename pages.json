@@ -16,6 +16,9 @@
             "path": "pages/me/me",
             "style": {}
         }, {
+			"path": "pages/me/auth",
+			"style": {}
+		}, {
 			"path": "pages/me/login",
 			"style": {}
 		}, {
@@ -23,6 +26,9 @@
             "style": {}
         }, {
 			"path": "pages/detail/detail",
+			"style": {}
+		}, {
+			"path": "pages/order/buy",
 			"style": {}
 		}
     ],

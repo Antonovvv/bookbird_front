@@ -66,20 +66,18 @@
 								//console.log(res.data);
 								if (res.statusCode == 200 || res.statusCode == 201) {
 									var token = res.data.token
+									var isAuthorized = res.data.isAuthorized
 									_this.global.token = token
+									_this.global.isAuthorized = isAuthorized
 									uni.setStorage({
 										key: 'token',
 										data: token,
 										success() {
-											console.log('storaged token: ' + token);
+											console.log('storaged token:' + token, 'Authorized:' + isAuthorized);
 										}
 									})
 								} else {
-									uni.showToast({
-										title: '获取用户失败！请重新进入小程序',
-										duration: 3000,
-										icon: 'none'
-									})
+									uni.showToast({title: '获取用户失败！请重新进入小程序', duration: 3000, icon: 'none'})
 								}
 							},
 							fail: function (error) {

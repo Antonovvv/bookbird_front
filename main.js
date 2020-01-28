@@ -11,7 +11,8 @@ Vue.prototype.global = {
 	serverUrl: "https://www.bookbird.cn/api/mp/",
 	bucketUrl: "http://q3vy3pdtr.bkt.clouddn.com/",
 	nickname: '',
-	token: ''
+	token: '',
+	isAuthorized: false
 }
 Vue.prototype.test = {
 	searchList: [
