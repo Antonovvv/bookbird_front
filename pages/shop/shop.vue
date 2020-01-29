@@ -30,12 +30,23 @@
 			return {
 				space: '  ',
 				searchText: '',
-				tryList: ['微积分', '电路理论', '微机原理', '毛概', '数理方程与特殊函数']
+				tryList: []
 			}
 		},
 		onLoad() {
-			uni.setNavigationBarTitle({
-				title: '首页'
+			var _this = this
+			uni.request({
+				url: this.global.serverUrl + "post/try",
+				data: {
+					count: 8
+				},
+				success: function(res) {
+					if (res.statusCode == 200) {
+						_this.tryList = res.data.tryList
+					} else {
+						console.log('Request for tryList failed');
+					}
+				}
 			})
 		},
 		onShow() {

@@ -18,35 +18,12 @@
 			initNav() {
 				uni.getSystemInfo({
 					success: function(e) {
-						//console.log(e.statusBarHeight);
-						/*
-						// #ifndef MP
-						Vue.prototype.StatusBar = e.statusBarHeight;
-						if (e.platform == 'android') {
-							Vue.prototype.CustomBar = e.statusBarHeight + 50;
-						} else {
-							Vue.prototype.CustomBar = e.statusBarHeight + 45;
-						};
-						// #endif
-						*/
-						
-						// #ifdef MP-WEIXIN
-						Vue.prototype.StatusBar = e.statusBarHeight;
+						this.StatusBar = e.statusBarHeight;
+						let custom = wx.getMenuButtonBoundingClientRect();
 						setTimeout(function() {
-							let custom = wx.getMenuButtonBoundingClientRect();
 							Vue.prototype.Custom = custom;
-							Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
+							this.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
 						}, 100)
-						
-						//console.log(this.StatusBar, this.CustomBar);
-						// #endif
-						
-						// #ifdef MP-ALIPAY
-						Vue.prototype.StatusBar = e.statusBarHeight;
-						Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
-						// #endif
-						
-						//console.log(this.StatusBar, this.CustomBar);
 					}
 				})
 			},
