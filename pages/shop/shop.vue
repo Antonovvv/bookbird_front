@@ -2,13 +2,12 @@
 	<view class="container">
 		<image class="background-image" src="../../static/bgimg.jpg" mode="aspectFill"></image>
 		<image class="logo" src="../../static/shop_logo.png"></image>
-		<view class="cu-bar">
-			<view class="search-form round search-box">
-				<text space="emsp">{{space}}</text>
+		<view class="search-box">
+			<view class="search-bar">
+				<icon type="search" size="18" color="#969696"></icon>
 				<input @focus="inputFocus" @confirm="searchConfirm" v-model="searchText" :adjust-position="false" type="text" 
-				placeholder="搜索你想要的书籍" confirm-type="search"
-				class="search"/>
-				<text class="cuIcon-search"></text>
+				placeholder="搜索你想要的书籍" placeholder-style="color: #ADADAD;" confirm-type="search" class="search-input"/>
+				<view class="look" @tap="toLook">随便看看</view>
 			</view>
 		</view>
 		<view class="text-area">
@@ -21,19 +20,16 @@
 </template>
 
 <script>
-	import uniSearchBar from '@/components/uni-search-bar/uni-search-bar.vue'
 	export default {
-		components: {
-			uniSearchBar
-		},
 		data() {
 			return {
-				space: '  ',
 				searchText: '',
 				tryList: []
 			}
 		},
 		onLoad() {
+		},
+		onShow() {
 			var _this = this
 			uni.request({
 				url: this.global.serverUrl + "post/try",
@@ -48,23 +44,19 @@
 					}
 				}
 			})
-		},
-		onShow() {
 			this.searchText = ''
 		},
 		methods: {
 			inputFocus() {
-				
 			},
 			searchConfirm(e) {
-				uni.navigateTo({
-					url: 'search?text=' + encodeURIComponent(JSON.stringify(e.detail.value))
-				})
+				uni.navigateTo({url: 'search?text=' + encodeURIComponent(JSON.stringify(e.detail.value))})
 			},
 			trySearch(text) {
-				uni.navigateTo({
-					url: 'search?text=' + encodeURIComponent(JSON.stringify(text))
-				})
+				uni.navigateTo({url: 'search?text=' + encodeURIComponent(JSON.stringify(text))})
+			},
+			toLook() {
+				uni.navigateTo({url: 'look'})
 			}
 		}
 	}
@@ -101,13 +93,30 @@
 		border-radius: 132rpx;
 	}
 	
-	.container .cu-bar {
-		min-height: auto;
+	.search-bar {
+		height: 70rpx;
+		border: 4rpx solid;
+		border-radius: 35rpx;
+		border-color: #ff6e78;
+		background-color: #FFFFFF;
+		margin: 0 30rpx;
+		display: flex;
+		align-items: center;
+		padding: 0 26rpx;
 	}
-
-	.cu-bar .search-form .search {
+	.search-bar .search-input {
 		background-color: #FFFFFF;
 		font-size: 32rpx;
+		color: #ADADAD;
+		margin-left: 18rpx;
+		width: 400rpx;
+	}
+	.look {
+		padding-left: 26rpx;
+		border-left: 2rpx solid #CECECE;
+		line-height: 36rpx;
+		position: relative;
+		left: 30rpx;
 	}
 	
 	.text-area {

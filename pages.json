@@ -7,6 +7,9 @@
 			"path": "pages/shop/search",
 			"style": {}
 		}, {
+            "path" : "pages/shop/look",
+            "style" : {}
+        }, {
 			"path": "pages/sell/sell",
 			"style": {}
 		}, {

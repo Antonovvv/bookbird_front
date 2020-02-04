@@ -1,8 +1,6 @@
 <template>
 	<view>
-		<cu-custom bgColor="bg-white" :isBack="true">
-			<block slot="content">订单</block>
-		</cu-custom>
+		<nav-bar>订单</nav-bar>
 		<view class="info-box">
 			<view class="info-form">
 				<view class="form-title">书名</view>

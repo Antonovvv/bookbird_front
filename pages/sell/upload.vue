@@ -1,9 +1,6 @@
 <template>
 	<view>
-		<cu-custom bgColor="bg-white" :isBack="true">
-			<block slot="backText"></block>
-			<block slot="content">卖书</block>
-		</cu-custom>
+		<nav-bar>卖书</nav-bar>
 		<!--扫码结果-->
 		<view class="cu-modal" :class="modalName=='scanResult'?'show':''">
 			<view class="cu-dialog confirm-modal">
@@ -132,9 +129,7 @@
 				}
 			},
 			viewImage() {
-				uni.previewImage({
-					urls: [this.postImage]
-				})
+				uni.previewImage({urls: [this.postImage]})
 			},
 			deleteImage() {
 				this.postImage = ""
@@ -198,7 +193,7 @@
 			imageUpload(token, key) {
 				var options = {
 					region: 'ECN',
-					domain: 'q3vy3pdtr.bkt.clouddn.com',
+					domain: 'img.bookbird.cn',
 					uptoken: token,
 					key: key
 				}
@@ -208,10 +203,7 @@
 					(res) => {
 						_this.backImageUrl = res.imageURL
 						//console.log('file url is: ' + res.fileUrl);
-						uni.showToast({
-							title: '上传成功',
-							duration: 3000
-						})
+						uni.showToast({title: '上传成功', duration: 3000})
 						setTimeout(function() {
 							_this.isUploading = false
 							uni.navigateBack({})

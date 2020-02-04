@@ -5,13 +5,15 @@ import cuCustom from './colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
 import yNavbar from './components/y-navbar/y-navbar.vue'
 Vue.component('y-navbar', yNavbar)
+import zhouWeiNavBar from "@/components/zhouWei-navBar";
+Vue.component('nav-bar', zhouWeiNavBar);
 
 Vue.config.productionTip = false
-Vue.prototype.StatusBar = 20;
-Vue.prototype.CustomBar = 64;
+//Vue.prototype.StatusBar = 20;
+//Vue.prototype.CustomBar = 64;
 Vue.prototype.global = {
 	serverUrl: "https://www.bookbird.cn/api/mp/",
-	bucketUrl: "http://q3vy3pdtr.bkt.clouddn.com/",
+	bucketUrl: "http://img.bookbird.cn/",
 	nickname: '',
 	token: '',
 	isAuthorized: false

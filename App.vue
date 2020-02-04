@@ -18,12 +18,12 @@
 			initNav() {
 				uni.getSystemInfo({
 					success: function(e) {
-						this.StatusBar = e.statusBarHeight;
 						let custom = wx.getMenuButtonBoundingClientRect();
 						setTimeout(function() {
+							Vue.prototype.StatusBar = e.statusBarHeight;
 							Vue.prototype.Custom = custom;
-							this.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-						}, 100)
+							Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
+						}, 200)
 					}
 				})
 			},
@@ -78,13 +78,15 @@
 	body {
 		background-color: #F8F8F8;
 	}
-	
-	.cu-bar .search-box {
-		height: 70rpx;
-		width: 700rpx;
-		border: 2rpx solid;
-		border-color: #ff6e78;
-		background-color: #FFFFFF;
+	button {
+		padding: 0;
+	}
+	button::after {
+		border: 0;
 	}
 	
+	.search-box {
+		height: 70rpx;
+		width: 100%
+	}
 </style>

@@ -1,11 +1,8 @@
 <template>
 	<view class="content">
-		<cu-custom bgColor="bg-white" :isBack="true">
-			<block slot="content">详情</block>
-		</cu-custom>
-		
+		<nav-bar>详情</nav-bar>
 		<view class="image-box">
-			<image :src="postInfo.imageUrl" class="post-image" mode="aspectFit"/>
+			<image :src="postInfo.imageUrl" class="post-image" mode="aspectFit" @tap="previewImage"/>
 		</view>
 		
 		<view class="info-box">
@@ -63,26 +60,18 @@
 					uni.request({
 						url: this.global.serverUrl + "user/cart",
 						method: 'POST',
-						header: {
-							'content-type': 'application/x-www-form-urlencoded'
-						},
+						header: {'content-type': 'application/x-www-form-urlencoded'},
 						data: {
 							token: token,
 							postId: this.postInfo.postId
 						},
 						success: function (res) {
 							if (res.statusCode == 201) {
-								uni.showToast({
-									title: '加入购物车'
-								});
+								uni.showToast({title: '加入购物车'});
 								_this.inCart = true
 							}
 							else if (res.statusCode == 403) {
-								uni.showToast({
-									title: '已经在购物车中了！',
-									duration: 1500,
-									icon: 'none'
-								});
+								uni.showToast({title: '已经在购物车中了！', duration: 1500, icon: 'none'});
 								_this.inCart = true
 							}
 							else {
@@ -97,9 +86,7 @@
 			},
 			buy() {
 				if (this.global.isAuthorized) {
-					uni.navigateTo({
-						url: "../order/buy?postInfo=" + encodeURIComponent(JSON.stringify(this.postInfo))
-					})
+					uni.navigateTo({url: "../order/buy?postInfo=" + encodeURIComponent(JSON.stringify(this.postInfo))})
 				} else {
 					var _this = this
 					uni.showModal({
@@ -108,24 +95,20 @@
 						confirmText: '去认证',
 						success: function (res) {
 							if (res.confirm) {
-								uni.navigateTo({
-									url: '../me/auth?authorized=' + _this.global.isAuthorized
-								})
+								uni.navigateTo({url: '../me/auth?authorized=' + _this.global.isAuthorized})
 							}
 						}
 					})
 				}
-				
+			},
+			previewImage() {
+				uni.previewImage({urls: [this.postInfo.imageUrl]})
 			},
 			backHome() {
-				uni.switchTab({
-					url: '../shop/shop'
-				})
+				uni.switchTab({url: '../shop/shop'})
 			},
 			goCart() {
-				uni.switchTab({
-					url: '../cart/cart'
-				})
+				uni.switchTab({url: '../cart/cart'})
 			}
 		}
 	}

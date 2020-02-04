@@ -1,10 +1,8 @@
 <template>
 	<view class="container">
-		<y-navbar bgColor="bg-white" leftMode="edit">
-			<block slot="editText" @tap="edit">编辑</block>
-			<block slot="confirmText" @tap="editConfirm">完成</block>
-			<block slot="content">购物车</block>
-		</y-navbar>
+		<nav-bar title="购物车">
+			<view slot="left" class="edit-text" @tap="edit">{{!inEdit ? '编辑' : '完成'}}</view>
+		</nav-bar>
 		<checkbox-group @change="checkboxChange">
 			<view class="cart-box">
 				<view class="cart-item" v-for="(item, index) in cartList" :key="index">
@@ -107,15 +105,14 @@
 		},
 		methods: {
 			edit() {
-				this.inEdit = true
-			},
-			editConfirm() {
-				for (let item of this.cartList) {
-					if (!item.valid) {//已失效商品在编辑中被选中，完成编辑时置为未选中
-						item.checked = false
+				if (this.inEdit) {
+					for (let item of this.cartList) {
+						if (!item.valid) {//已失效商品在编辑中被选中，完成编辑时置为未选中
+							item.checked = false
+						}
 					}
 				}
-				this.inEdit = false
+				this.inEdit = !this.inEdit
 			},
 			editDelete() {
 				var deleteList = []
@@ -125,6 +122,7 @@
 					}
 				}
 				var _this = this
+				var token = uni.getStorageSync('token')
 				uni.request({
 					url: this.global.serverUrl + "user/cart",
 					method: 'DELETE',
@@ -132,14 +130,19 @@
 						'content-type': 'application/x-www-form-urlencoded'
 					},
 					data: {
+						token: token,
 						deleteList: deleteList
 					},
 					success: function (res) {
 						console.log(res.data);
-						for (let i = _this.cartList.length - 1; i >= 0; i--) {
-							if (_this.cartList[i].checked) {
-								_this.cartList.splice(i, 1)
+						if (res.statusCode == 200) {
+							for (let i = _this.cartList.length - 1; i >= 0; i--) {
+								if (_this.cartList[i].checked) {
+									_this.cartList.splice(i, 1)
+								}
 							}
+						} else {
+							uni.showToast({title: '删除失败，请稍后再试', duration: 3000, icon: 'none'})
 						}
 					}
 				})
@@ -181,6 +184,10 @@
 <style>
 	.container {
 		/*margin-bottom: 100rpx;*/
+	}
+	
+	.edit-text {
+		margin-left: 30rpx;
 	}
 	
 	.space-container {

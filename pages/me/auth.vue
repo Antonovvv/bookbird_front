@@ -1,8 +1,6 @@
 <template>
 	<view>
-		<cu-custom bgColor="bg-white" :isBack="true">
-			<block slot="content">身份认证</block>
-		</cu-custom>
+		<nav-bar>身份认证</nav-bar>
 		<form class="info-box">
 			<view class="info-form">
 				<view class="form-title">姓名</view>
@@ -223,7 +221,7 @@
 			imageUpload(token, key) {
 				var options = {
 					region: 'ECN',
-					domain: 'q4t4ac92e.bkt.clouddn.com',
+					domain: 'imgs.bookbird.cn',
 					uptoken: token,
 					key: key
 				}

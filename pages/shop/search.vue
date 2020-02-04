@@ -1,8 +1,6 @@
 <template>
 	<view class="container">
-		<cu-custom bgColor="bg-white" :isBack="true">
-			<block slot="content">搜索</block>
-		</cu-custom>
+		<nav-bar>搜索</nav-bar>
 		<!--searchBar-->
 		<view class="cu-bar bg-white search-bar">
 			<view class="search-form round search-box">
@@ -218,6 +216,13 @@
 		
 	}
 	
+	.cu-bar .search-box {
+		width: 700rpx;
+		height: 70rpx;
+		border: 2rpx solid;
+		border-color: #ff6e78;
+		background-color: #FFFFFF;
+	}
 	.search-bar {
 		z-index: 999;
 		position: fixed;

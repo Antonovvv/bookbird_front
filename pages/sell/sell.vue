@@ -1,8 +1,6 @@
 <template>
 	<view>
-		<cu-custom bgColor="bg-white">
-			<block slot="content">卖书给BookBird</block>
-		</cu-custom>
+		<nav-bar backState="2000">卖书给BookBird</nav-bar>
 		<!--卖书引导-->
 		<view class="guide-content">
 			<view class="guide-block">
@@ -57,11 +55,7 @@
 							_this.queryBook(res.result)//扫码得到isbn码，提交查询
 						},
 						fail: function () {
-							uni.showToast({
-								title: '无法识别条码',
-								duration: 3000,
-								icon: 'none'
-							})
+							uni.showToast({title: '无法识别条码',duration: 3000,icon: 'none'})
 							console.log('scan fail')
 						}
 					})
@@ -91,25 +85,15 @@
 						console.log(res)
 						if(res.statusCode == 200) {
 							//console.log("剩余次数:", res.header['X-Ratelimit-Remaining2'])
-							uni.navigateTo({
-								url: "upload?book=" + encodeURIComponent(JSON.stringify(res.data))
-							})
+							uni.navigateTo({url: "upload?book=" + encodeURIComponent(JSON.stringify(res.data))})
 						}
 						else {
-							uni.showToast({
-								title: "豆瓣不理我们啦！",
-								duration: 3000,
-								icon: 'none'
-							})
+							uni.showToast({title: "豆瓣不理我们啦！", duration: 3000, icon: 'none'})
 						}
 					},
 					fail: function() {
 						uni.hideLoading()
-						uni.showToast({
-							title: "请求失败",
-							duration: 3000,
-							icon: 'none'
-						})
+						uni.showToast({title: "请求失败", duration: 3000, icon: 'none'})
 					}
 				})
 			},
