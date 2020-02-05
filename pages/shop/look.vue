@@ -7,21 +7,11 @@
 				direction="all" :x="item.moveX" :y="item.moveY" :style="{zIndex:`${9999-item.cardId}`}"
 				out-of-bounds v-if="index <= number" :disabled="index != 0" :animation="item.animation"
 				@tap="detail(item)" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchend">
-					<view class="card-box" :animation="animationData[index]"
-					:style="{backgroundImage:`url(${item.imageUrl})`, transform:index < number ? `rotate(${rotate*index}deg) scale(${ 1-(1-scale.x)*index },${ 1-(1-scale.y)*index }) skew(${skew.x*index}deg, ${skew.y*index}deg) translate(${translate.x*index}px, ${translate.y*index}px)` 
+					<view :animation="animationData[index]"
+					:style="{transform:index < number ? `rotate(${rotate*index}deg) scale(${ 1-(1-scale.x)*index },${ 1-(1-scale.y)*index }) skew(${skew.x*index}deg, ${skew.y*index}deg) translate(${translate.x*index}px, ${translate.y*index}px)` 
 					: `rotate(${rotate*(number-1)}deg) scale(${ 1-(1-scale.x)*(number-1) },${ 1-(1-scale.y)*(number-1) }) skew(${skew.x*(number-1)}deg, ${skew.y*(number-1)}deg) translate(${translate.x*(number-1)}px, ${translate.y*(number-1)}px)`,
 					opacity:index<number?`${ 1-(1-opacity)*index }`:`${ 1-(1-opacity)*(number-1) }`}">
-						<view class="info-box">
-							<view class="card-info">
-								<text style="font-size: 32rpx;">{{item.bookName}}</text>
-								<text style="font-size: 22rpx;">{{item.author}} 著/{{item.publisher}}</text>
-								<view class="custom-info">
-									<text class="info-price">￥{{item.sale}}</text>
-									<text>{{newLevel[item.new]}}</text>
-									<text>{{item.addr}}</text>
-								</view>
-							</view>
-						</view>
+						<card-box :item="item" ref="cardBox"></card-box>
 					</view>
 				</movable-view>
 			</movable-area>
@@ -35,13 +25,14 @@
 
 <script>
 	import clCardDel from "@/components/cl-cardDel/cl-cardDel";
+	import cardBox from "./card-box.vue"
 	export default {
 		mixins: [clCardDel],
+		components: {cardBox},
 		data() {
 			return {
 				lookList: [],
 				cardCount: 0,
-				newLevel: ['五成', '七成', '九成', '全新'],
 				vibrated: false
 			}
 		},
@@ -82,21 +73,31 @@
 				})
 			},
 			moveJudge(x, y, ratio) {//触摸移动判断
-				//let e = this.$refs.cardBox[0]
-				if (Math.abs(x) > 120 && !this.vibrated) {//达到触发条件时短振动
-					uni.vibrateShort({})
-					this.vibrated = true
-				} else if (Math.abs(x) <= 120 && this.vibrated) {
-					this.vibrated = false
+				let e = this.$refs.cardBox[0]
+				if (x > 20) {
+					e.moveRight(ratio)
+					
+				} else if (x < -20) {
+					e.moveLeft(ratio)
+				} else {
+					e.moveCenter()
 				}
+				/*if (Math.abs(x) > 40 && !this.vibrated) {//达到触发条件时短振动
+					//uni.vibrateShort({})
+					this.vibrated = true
+				} else if (Math.abs(x) <= 40 && this.vibrated) {
+					this.vibrated = false
+				}*/
 			},
 			endJudge(x, y) {//触摸结束判断
-				//let e = this.$refs.cardBox[0]
-				if (Math.abs(x) <= 120) {
+				let e = this.$refs.cardBox[0]
+				if (Math.abs(x) <= 60) {
+					e._back()
 					this._back()
 				} else {
 					uni.vibrateShort({})
 					this._del()
+					e.clearAnimation()
 				}
 			},
 			delCard(x, y) {//移除card时
@@ -105,11 +106,18 @@
 				}
 			},
 			drop() {
+				if (this.lookList.length == 0)	return
+				this.moveX = -10
+				this.moveY = 1
 				uni.vibrateShort({})
-				uni.showToast({title: '扔掉'})
+				this._del()
 			},
 			like() {
+				if (this.lookList.length == 0)	return
+				this.moveX = 10
+				this.moveY = 1
 				uni.vibrateShort({})
+				this._del()
 				uni.showToast({title: '加入购物车'})
 			},
 			detail() {
@@ -142,42 +150,6 @@
 		margin-top: -500rpx;
 	}
 
-	.card-box {
-		width: 600rpx;
-		height: 700rpx;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		border-radius: 20rpx;
-		box-shadow: 0 0 10rpx #888888;
-	}
-	.info-box {
-		width: 600rpx;
-		height: 200rpx;
-		position: absolute;
-		bottom: 0;
-		background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5));
-		color: #FFFFFF;
-		padding: 50rpx 0 0 36rpx;
-		border-radius: 0 0 20rpx 20rpx;
-	}
-	.card-info {
-		display: flex;
-		flex-direction: column;
-	}
-	.custom-info {
-		margin-top: 10rpx;
-		display: flex;
-		justify-content: space-between;
-		width: 300rpx;
-		font-size: 26rpx;
-		line-height: 50rpx;
-	}
-	.info-price {
-		font-size: 34rpx;
-		color: #FF6E78;
-	}
-	
 	.action-box {
 		position: absolute;
 		bottom: 120rpx;
@@ -191,7 +163,8 @@
 		line-height: 130rpx;
 		border-radius: 50%;
 		font-size: 65rpx;
-		color: #4CD964;
+		font-weight: bold;
+		color: #39B54A;
 		background-color: #FFFFFF;
 		box-shadow: 0 0 10rpx #D8D8D8; 
 	}
