@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<nav-bar>订单</nav-bar>
+		<nav-bar fontColor="#727272">订单</nav-bar>
 		<view class="info-box">
 			<view class="info-form">
 				<view class="form-title">书名</view>

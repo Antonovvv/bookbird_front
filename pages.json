@@ -33,7 +33,10 @@
 		}, {
 			"path": "pages/order/buy",
 			"style": {}
-		}
+		}, {
+            "path": "pages/me/action",
+            "style": {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

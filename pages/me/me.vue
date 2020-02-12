@@ -16,24 +16,46 @@
 			</view>
 			<text class="auth-text" :class="authorized ? 'authed' : ''">身份认证</text>
 		</view>
-		
-		<view class="my-tab">
+		<!--<view class="my-tab">
 			<view class="my-tab-item" :class="index==tabCur ? 'selected' : ''" 
 			v-for="(item, index) in myTabs" :key="index" @tap="tabSelect(index)">
 				{{item}}
 			</view>
+		</view>-->
+		<view class="action-box">
+			<view class="my-action" v-for="(icon, title) in actions" :key="title" @tap="toAction(title)">
+				<image :src="icon" class="action-icon"></image>
+				<text class="action-title">{{title}}</text>
+			</view>
 		</view>
-		<view></view>
+		<view class="dynamic-title">动态</view>
+		<view class="dynamic-list">
+			<order-box v-for="(item, index) in dynamicList" :key="index" :item="item" :mode="dynamic"></order-box>
+		</view>
 	</view>
 </template>
 
 <script>
+	import orderBox from './order-box.vue'
 	export default {
+		components: {orderBox},
 		data() {
 			return {
 				authorized: this.global.isAuthorized,
-				tabCur: 0,
-				myTabs: ['买书', '卖书']
+				actions: {
+					'我买到的': '../../static/tabbar/shop_icon.png',
+					'我卖出的': '../../static/tabbar/sell_icon.png',
+					'我发布的': '../../static/tabbar/cart_icon.png'
+				},
+				dynamicList: [
+					{
+						bookName: '微积分',
+						imageUrl: '../../static/book.png',
+						deadline: '2月30日25:00前',
+						addr: '韵苑23栋',
+						sale: 500
+					}
+				]
 			}
 		},
 		onShow() {
@@ -46,13 +68,15 @@
 		},
 		methods: {
 			toAuth() {
-				uni.navigateTo({
-					url: 'auth?authorized=' + this.global.isAuthorized
-				})
+				uni.navigateTo({url: 'auth?authorized=' + this.global.isAuthorized})
 			},
-			tabSelect(index) {
-				this.tabCur = index
+			toAction(title) {
+				var index = Object.keys(this.actions).indexOf(title)
+				uni.navigateTo({url: 'action?tab=' + index})
 			}
+			/*tabSelect(index) {
+				this.tabCur = index
+			}*/
 		}
 	}
 </script>
@@ -115,22 +139,39 @@
 		color: #FF8F97;
 	}
 	
-	.my-tab {
+	.action-box {
+		width: 700rpx;
+		height: 214rpx;
 		background-color: #FFFFFF;
-		color: #7F7F7F;
-		text-align: center;
+		border-radius: 18rpx;
 		display: flex;
-		margin-top: 20rpx;
+		justify-content: space-around;
+		margin: 20rpx auto;
+		padding: 0 30rpx;
 	}
-	.my-tab-item {
-		height: 100rpx;
-		line-height: 100rpx;
-		flex: 1;
-		margin: 0 120rpx;
-		font-size: 36rpx;
+	.my-action {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 60rpx;
 	}
-	.my-tab .selected {
-		border-bottom: 10rpx solid;
+	.action-icon {
+		width: 72rpx;
+		height: 72rpx;
+		margin-bottom: 20rpx;
+	}
+	.action-title {
 		color: #FF8F97;
+		font-size: 32rpx;
+	}
+	
+	.dynamic-title {
+		margin-left: 50rpx;
+		font-size: 32rpx;
+	}
+	.dynamic-list {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 </style>

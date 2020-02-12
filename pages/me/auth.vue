@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<nav-bar>身份认证</nav-bar>
+		<nav-bar fontColor="#727272">身份认证</nav-bar>
 		<form class="info-box">
 			<view class="info-form">
 				<view class="form-title">姓名</view>

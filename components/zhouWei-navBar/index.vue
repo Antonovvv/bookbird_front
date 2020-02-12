@@ -403,7 +403,7 @@ export default {
 	}
 	.title {
 		height: 88upx;
-		font-size: 32upx;
+		font-size: 36upx;
 		padding-left: 30upx;
 		padding-right: 30upx;
 		overflow: hidden;

@@ -72,6 +72,7 @@
 		display: flex;
 		flex-direction: column;
 		/*justify-content: center;*/
+		position: fixed;
 	}
 	
 	.background-image {

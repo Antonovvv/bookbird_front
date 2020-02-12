@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<nav-bar title="购物车">
+		<nav-bar fontColor="#727272" title="购物车">
 			<view slot="left" class="edit-text" @tap="edit">{{!inEdit ? '编辑' : '完成'}}</view>
 		</nav-bar>
 		<checkbox-group @change="checkboxChange">
@@ -17,7 +17,7 @@
 						<view class="item-tags">
 							<view class="item-price" v-if="item.valid">￥{{item.sale.toFixed(2)}}</view>
 							<view class="item-addr" v-if="item.valid">
-								<text class="cuIcon-location"></text>{{item.addr}}
+								<text class="cuIcon-location"/>{{item.addr}}
 							</view>
 							<view class="item-invalid" v-if="!item.valid">已失效</view>
 						</view>

@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<nav-bar>详情</nav-bar>
+		<nav-bar fontColor="#727272">详情</nav-bar>
 		<view class="image-box">
 			<image :src="postInfo.imageUrl" class="post-image" mode="aspectFit" @tap="previewImage"/>
 		</view>

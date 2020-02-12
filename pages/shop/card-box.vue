@@ -86,13 +86,13 @@
 
 <style>
 	.card-box {
-		width: 600rpx;
-		height: 700rpx;
+		width: 666rpx;
+		height: 800rpx;
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
 		border-radius: 20rpx;
-		box-shadow: 0 0 10rpx #888888;
+		box-shadow: 0 2rpx 10rpx #888888;
 	}
 	.tips {
 		width: 120rpx;
@@ -121,7 +121,7 @@
 		color: #4CD964;
 	}
 	.info-box {
-		width: 600rpx;
+		width: 666rpx;
 		height: 200rpx;
 		position: absolute;
 		bottom: 0;

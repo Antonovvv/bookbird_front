@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<nav-bar backState="2000">卖书给BookBird</nav-bar>
+		<nav-bar fontColor="#727272" backState="2000">卖书给BookBird</nav-bar>
 		<!--卖书引导-->
 		<view class="guide-content">
 			<view class="guide-block">

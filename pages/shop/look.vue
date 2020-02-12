@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<nav-bar>随便看看</nav-bar>
+		<nav-bar fontColor="#727272">随便看看</nav-bar>
 		<view class="container" :style="{height:`${contentHeight}px`,width:`${sysWidth}px`}">
 			<movable-area class="move-area" :style="{height:`${3*sysHeight}px`,width:`${3*sysWidth}px`,top:`${-sysHeight}px`,left:`${-sysWidth}px` }">
 				<movable-view class="move-view" v-for="(item, index) in lookList" :key="item.cardId"
@@ -141,13 +141,13 @@
 		position: absolute;
 	}
 	.move-view {
-		width: 600rpx;
-		height: 700rpx;
+		width: 666rpx;
+		height: 800rpx;
 		position: absolute;
 		left: 50%;
 		top: 50%;
-		margin-left: -300rpx;
-		margin-top: -500rpx;
+		margin-left: -333rpx;
+		margin-top: -600rpx;
 	}
 
 	.action-box {
@@ -164,7 +164,7 @@
 		border-radius: 50%;
 		font-size: 65rpx;
 		font-weight: bold;
-		color: #39B54A;
+		color: #B6B6B6;
 		background-color: #FFFFFF;
 		box-shadow: 0 0 10rpx #D8D8D8; 
 	}

@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<nav-bar>卖书</nav-bar>
+		<nav-bar fontColor="#727272">卖书</nav-bar>
 		<!--扫码结果-->
 		<view class="cu-modal" :class="modalName=='scanResult'?'show':''">
 			<view class="cu-dialog confirm-modal">

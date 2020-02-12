@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<nav-bar>搜索</nav-bar>
+		<nav-bar fontColor="#727272">搜索</nav-bar>
 		<!--searchBar-->
 		<view class="cu-bar bg-white search-bar">
 			<view class="search-form round search-box">
