@@ -30,7 +30,8 @@
 		</view>
 		<view class="dynamic-title">动态</view>
 		<view class="dynamic-list">
-			<order-box v-for="(item, index) in dynamicList" :key="index" :item="item" :mode="dynamic"></order-box>
+			<order-box v-for="(item, index) in dynamicList" :key="index" :item="item" mode="dynamic"
+			@send-confirm="sendConfirm(index)" @receive-confirm="receiveConfirm(index)"></order-box>
 		</view>
 	</view>
 </template>
@@ -53,7 +54,33 @@
 						imageUrl: '../../static/book.png',
 						deadline: '2月30日25:00前',
 						addr: '韵苑23栋',
-						sale: 500
+						sale: 500,
+						identity: 'seller',	//buyer or seller
+						status: 0	//0为待送单，1为待取单，2为已完成
+					}, {
+						bookName: '微积分',
+						imageUrl: '../../static/book.png',
+						deadline: '2月30日25:00前',
+						addr: '韵苑23栋',
+						sale: 500,
+						identity: 'buyer',
+						status: 0
+					}, {
+						bookName: '微积分',
+						imageUrl: '../../static/book.png',
+						deadline: '2月30日25:00前',
+						addr: '韵苑23栋',
+						sale: 500,
+						identity: 'seller',
+						status: 1
+					}, {
+						bookName: '练习本儿',
+						imageUrl: '../../static/sell_pic1.png',
+						deadline: '2月30日25:00前',
+						addr: '韵苑23栋',
+						sale: 500,
+						identity: 'seller',
+						status: 2
 					}
 				]
 			}
@@ -73,6 +100,14 @@
 			toAction(title) {
 				var index = Object.keys(this.actions).indexOf(title)
 				uni.navigateTo({url: 'action?tab=' + index})
+			},
+			sendConfirm(index) {
+				this.dynamicList[0].status = 1
+				this.dynamicList[1].status = 1
+			},
+			receiveConfirm(index) {
+				this.dynamicList[0].status = 2
+				this.dynamicList[1].status = 2
 			}
 			/*tabSelect(index) {
 				this.tabCur = index

@@ -80,6 +80,7 @@
 	}
 	button {
 		padding: 0;
+		margin: 0;
 	}
 	button::after {
 		border: 0;
