@@ -8,7 +8,7 @@
 			</view>
 			<view class="info-form">
 				<view class="form-title">价格</view>
-				<view class="form-content">￥{{postInfo.sale.toFixed(2)}}</view>
+				<view class="form-content">￥{{(postInfo.sale).toFixed(2)}}</view>
 			</view>
 			<view class="info-form">
 				<view class="form-title">交易地址</view>
@@ -26,19 +26,28 @@
 			</view>
 		</view>
 		<view class="action-box">
-			<button class="cu-btn round cancle" @tap="cancle">取消订单</button>
+			<button class="cu-btn round cancel" @tap="cancel">取消订单</button>
 			<button class="cu-btn round confirm" @tap="confirm">付款</button>
 		</view>
+		<action-sheet :show="showActionSheet" :tips="'假装发起微信支付,确认支付提交订单'" :item-list="actionSheetItems"
+		@click="payConfirm" @cancel="closeActionSheet"></action-sheet>
 	</view>
 </template>
 
 <script>
+	import actionSheet from '../../components/actionsheet/actionsheet.vue'
 	export default {
+		components: {actionSheet},
 		data() {
 			return {
 				postInfo: {},
 				timeIndex: -1,
-				arriveTimes: ['今日22:00前', '明日22:00前']
+				arriveTimes: ['今日22:00前', '明日22:00前'],
+				showActionSheet: false,
+				actionSheetItems: [{
+					text: "确认支付",
+					color: "#09BB07",
+				}]
 			}
 		},
 		onLoad(option) {
@@ -49,12 +58,46 @@
 			timePicked(e) {
 				this.timeIndex = e.detail.value
 			},
-			confirm() {
-				uni.showToast({
-					title: '发起付款'
+			orderSubmit() {
+				var _this = this
+				var token = uni.getStorageSync('token')
+				uni.request({
+					url: this.global.serverUrl + "order",
+					method: 'POST',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						token: token,
+						postId: this.postInfo.postId,
+						deadline: this.arriveTimes[this.timeIndex]
+					},
+					success: function (res) {
+						if (res.statusCode == 201) {
+							uni.showToast({
+								title: '订单提交成功'
+							})
+						} else {
+							console.log('request faild')
+						}
+					}
 				})
 			},
-			cancle() {
+			confirm() {
+				if (this.timeIndex == -1) {
+					uni.showToast({title: "请选择时间", duration: 3000, icon: 'none'})
+				} else {
+					this.showActionSheet = true
+				}
+			},
+			payConfirm() {
+				this.orderSubmit()
+				this.closeActionSheet()
+			},
+			closeActionSheet() {
+				this.showActionSheet = false
+			},
+			cancel() {
 				uni.navigateBack({})
 			}
 		}
@@ -115,7 +158,7 @@
 		position: fixed;
 		bottom: 80rpx;
 	}
-	.action-box .cancle {
+	.action-box .cancel {
 		width: 300rpx;
 		height: 100rpx;
 		background-color: #AAAAAA;

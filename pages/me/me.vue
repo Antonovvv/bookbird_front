@@ -48,45 +48,12 @@
 					'我卖出的': '../../static/tabbar/sell_icon.png',
 					'我发布的': '../../static/tabbar/cart_icon.png'
 				},
-				dynamicList: [
-					{
-						bookName: '微积分',
-						imageUrl: '../../static/book.png',
-						deadline: '2月30日25:00前',
-						addr: '韵苑23栋',
-						sale: 500,
-						identity: 'seller',	//buyer or seller
-						status: 0	//0为待送单，1为待取单，2为已完成
-					}, {
-						bookName: '微积分',
-						imageUrl: '../../static/book.png',
-						deadline: '2月30日25:00前',
-						addr: '韵苑23栋',
-						sale: 500,
-						identity: 'buyer',
-						status: 0
-					}, {
-						bookName: '微积分',
-						imageUrl: '../../static/book.png',
-						deadline: '2月30日25:00前',
-						addr: '韵苑23栋',
-						sale: 500,
-						identity: 'seller',
-						status: 1
-					}, {
-						bookName: '练习本儿',
-						imageUrl: '../../static/sell_pic1.png',
-						deadline: '2月30日25:00前',
-						addr: '韵苑23栋',
-						sale: 500,
-						identity: 'seller',
-						status: 2
-					}
-				]
+				dynamicList: []
 			}
 		},
 		onShow() {
 			this.authorized = this.global.isAuthorized
+			this.updateDynamic()
 		},
 		onReady() {
 			/*uni.navigateTo({
@@ -100,6 +67,36 @@
 			toAction(title) {
 				var index = Object.keys(this.actions).indexOf(title)
 				uni.navigateTo({url: 'action?tab=' + index})
+			},
+			updateDynamic() {
+				this.dynamicList = []
+				var _this = this
+				var token = uni.getStorageSync('token')
+				if (token) {
+					uni.request({
+						url: this.global.serverUrl + "user/dynamics",
+						data: {
+							token: token
+						},
+						success: function (res) {
+							if (res.statusCode == 200) {
+								console.log(res.data.dynamicList);
+								_this.dynamicList = res.data.dynamicList
+								for (let item of _this.dynamicList) {
+									item.imageUrl = _this.global.bucketUrl + item.imageName
+								}
+							}
+							else if (res.statusCode == 204) {
+								console.log('empty');
+							}
+							else if (res.statusCode == 403) {
+								uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
+							}
+						}
+					})
+				} else {
+					uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
+				}
 			},
 			sendConfirm(index) {
 				this.dynamicList[0].status = 1

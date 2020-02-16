@@ -27,14 +27,13 @@
 			<view class="tui-product-container">
 				<block v-for="(item,index) in bookList" :key="index">
 					<view class="tui-pro-item tui-flex-list" hover-class="hover" :hover-start-time="150">
-						<image :src="item.imageUrl" class="tui-pro-img tui-proimg-list"
-						 mode="widthFix"  @tap="detail(item)"/>
+						<image :src="item.imageUrl" class="tui-pro-img tui-proimg-list" mode="aspectFill"  @tap="detail(item)"/>
 						<view class="tui-pro-content" @tap="detail(item)">
 							<view class="tui-pro-tit">{{item.bookName}}</view>
 							<view class="book-info">{{item.author}} 著/{{item.publisher}}</view>
 							<view class="book-tags">
 								<view class="tui-pro-price">
-									<text class="book-price">￥{{item.sale.toFixed(2)}}</text>
+									<text class="book-price">￥{{(item.sale).toFixed(2)}}</text>
 								</view>
 								<view class="cu-tag radius book-tag">{{newLevel[item.new]}}</view>
 								<view class="cu-tag radius book-tag">{{item.addr}}</view>
@@ -101,6 +100,7 @@
 								_this.bookList = res.data.searchRes
 								for (let item of _this.bookList) {
 									item.imageUrl = _this.global.bucketUrl + item.imageName
+									item.sale = item.sale / 100
 								}
 							}
 							else {
@@ -273,6 +273,7 @@
 		overflow: hidden;
 		transition: all 0.15s ease-in-out;
 		padding: 20rpx;
+		position: relative;
 	}
 	
 	.tui-flex-list {
@@ -316,24 +317,20 @@
 		font-size: 22rpx;
 		overflow: hidden;
 	}
-	
 	.book-tags {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 	}
-	
 	.book-tag {
 		border-color: #AAAAAA;
 		color: #727272;
 		margin-top: 18rpx;
 	}
-	
 	.tui-pro-price {
 		padding-top: 18rpx;
 		margin-right: 18rpx;
 	}
-	
 	.book-price {
 		font-size: 30rpx;
 		font-weight: 500;
@@ -354,7 +351,6 @@
 	}
 	
 	.product-add {
-		margin: auto 34rpx auto auto;
 		width: 66rpx;
 		height: 66rpx;
 		border-radius: 50%;
@@ -364,5 +360,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		position: absolute;
+		right: 54rpx;
+		top: calc((100% - 66rpx) / 2);
 	}
 </style>

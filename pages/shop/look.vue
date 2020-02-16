@@ -59,7 +59,7 @@
 							var dataList = res.data.lookList
 							for (let item of dataList) {
 								item.imageUrl = _this.global.bucketUrl + item.imageName
-								item.sale = item.sale.toFixed(2)
+								item.sale = (item.sale / 100).toFixed(2)
 								item.cardId = _this.cardCount++
 								item.moveX = 0
 								item.moveY = 0

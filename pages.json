@@ -36,6 +36,9 @@
 		}, {
             "path": "pages/me/action",
             "style": {}
+        }, {
+            "path": "pages/order/send",
+            "style": {}
         }
     ],
 	"globalStyle": {

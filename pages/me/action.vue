@@ -9,27 +9,39 @@
 		</view>
 		<view class="order-list" v-if="tabCur <= 1">
 			<order-box v-for="(item, index) in orderList" :key="index" :item="item" mode="deal"
-			@send-confirm="sendConfirm(index)" @receive-confirm="receiveConfirm(index)"></order-box>
+			@send-confirm="onSendConfirm(index)" @receive-confirm="onReceiveConfirm(index)" @long-touch="onTouchLong(index)"></order-box>
 		</view>
 		<view class="order-list" v-if="tabCur == 2">
 			<order-box v-for="(item, index) in orderList" :key="index" :item="item" mode="post"
-			@post-detail="postDetail(index)" @post-delete="postDelete(index)"></order-box>
+			@post-detail="onPostDetail(index)" @post-delete="onPostDelete(index, item.bookName)"></order-box>
 			<view class="order-empty" v-if="orderList.length == 0">快去扫码上传第一本书吧~</view>
 		</view>
+		<action-sheet :show="showActionSheet" :tips="actionSheetTips" :item-list="actionSheetItems"
+		@click="actionConfirm" @cancel="closeActionSheet"></action-sheet>
 	</view>
 </template>
 
 <script>
 	import orderBox from './order-box.vue'
+	import actionSheet from '../../components/actionsheet/actionsheet.vue'
 	export default {
-		components: {orderBox},
+		components: {orderBox, actionSheet},
 		data() {
 			return {
 				tabCur: 0,
 				curPositon: 0,
 				actionTabs: ['我买到的', '我卖出的', '我发布的'],
 				tabsInfo: [],
-				orderList: []
+				orderList: [],
+				deletingIndex: 0,
+				cancelingIndex: 0,
+				deletingName: '',
+				showActionSheet: false,
+				actionSheetTips: '',
+				actionSheetItems: [{
+					text: "确认",
+					color: "#E64340",
+				}]
 			}
 		},
 		computed: {
@@ -37,7 +49,9 @@
 		onLoad(option) {
 			var tab = Number(option.tab)
 			this.tabCur = tab
-			this.updateOrders(tab)
+		},
+		onShow() {
+			this.updateOrders(this.tabCur)
 		},
 		onReady() {
 			const query = uni.createSelectorQuery().in(this);
@@ -54,59 +68,75 @@
 			tabSelect(index) {
 				this.tabCur = index
 				this.curPositon = this.tabsInfo[this.tabCur].left + (this.tabsInfo[this.tabCur].width - uni.upx2px(100)) / 2
-				this.orderList = []
 				var _this = this
 				setTimeout(function() {_this.updateOrders(index)}, 300)
 			},
 			updateOrders(tab) {
 				uni.showLoading({})
+				this.orderList = []
 				switch (tab) {
 					case 0:
-						this.orderList = [{
-							orderId: '20200214135800001',
-							orderTime: '2020年2月14日13:58',
-							bookName: '微积分',
-							imageUrl: '../../static/book.png',
-							deadline: '2月30日25:00前',
-							addr: '韵苑23栋',
-							sale: 500,
-							identity: 'buyer',
-							status: 0
-						}, {
-							orderId: '20200214142500002',
-							orderTime: '2020年2月14日14:25',
-							bookName: '练习本儿',
-							imageUrl: '../../static/sell_pic1.png',
-							deadline: '2月30日25:00前',
-							addr: '韵苑23栋',
-							sale: 500,
-							identity: 'buyer',
-							status: 1
-						}]
+						var _this = this
+						var token = uni.getStorageSync('token')
+						if (token) {
+							uni.request({
+								url: this.global.serverUrl + "user/orders",
+								data: {
+									token: token,
+									orderType: 'bought'
+								},
+								success: function (res) {
+									if (res.statusCode == 200) {
+										console.log(res.data.orderList);
+										_this.orderList = res.data.orderList
+										for (let item of _this.orderList) {
+											item.imageUrl = _this.global.bucketUrl + item.imageName
+											item.identity = 'buyer'
+										}
+									}
+									else if (res.statusCode == 204) {
+										uni.showToast({title: '没买过', duration: 3000, icon: 'none'})
+									}
+									else if (res.statusCode == 403) {
+										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
+									}
+								}
+							})
+						} else {
+							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
+						}
 						uni.hideLoading()
 						break;
 					case 1:
-						this.orderList = [{
-							orderId: '20200214135800001',
-							orderTime: '2020年2月14日13:58',
-							bookName: '微积分',
-							imageUrl: '../../static/book.png',
-							deadline: '2月30日25:00前',
-							addr: '韵苑23栋',
-							sale: 700,
-							identity: 'seller',
-							status: 0
-						}, {
-							orderId: '20200214142500002',
-							orderTime: '2020年2月14日14:25',
-							bookName: '练习本儿',
-							imageUrl: '../../static/sell_pic1.png',
-							deadline: '2月30日25:00前',
-							addr: '韵苑23栋',
-							sale: 800,
-							identity: 'seller',
-							status: 1
-						}]
+						var _this = this
+						var token = uni.getStorageSync('token')
+						if (token) {
+							uni.request({
+								url: this.global.serverUrl + "user/orders",
+								data: {
+									token: token,
+									orderType: 'sold'
+								},
+								success: function (res) {
+									if (res.statusCode == 200) {
+										console.log(res.data.orderList);
+										_this.orderList = res.data.orderList
+										for (let item of _this.orderList) {
+											item.imageUrl = _this.global.bucketUrl + item.imageName
+											item.identity = 'seller'
+										}
+									}
+									else if (res.statusCode == 204) {
+										uni.showToast({title: '没卖过', duration: 3000, icon: 'none'})
+									}
+									else if (res.statusCode == 403) {
+										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
+									}
+								}
+							})
+						} else {
+							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
+						}
 						uni.hideLoading()
 						break;
 					case 2:
@@ -134,17 +164,17 @@
 									else if (res.statusCode == 403) {
 										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
 									}
-									uni.hideLoading()
 								}
 							})
 						} else {
-							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
-							uni.hideLoading()
+							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})	
 						}
+						uni.hideLoading()
+						break;
+					default:
+						uni.hideLoading()
+						break;
 				}
-			},
-			postDetail(index) {
-				
 			},
 			postDelete(index) {
 				var _this = this
@@ -169,11 +199,119 @@
 					}
 				})
 			},
-			sendConfirm(index) {
-				this.orderList[index].status = 1
+			orderCancel(index) {
+				if (this.orderList[index].status == 0) {
+					var _this = this
+					var token = uni.getStorageSync('token')
+					uni.request({
+						url: this.global.serverUrl + "user/orders",
+						method: 'DELETE',
+						header: {
+							'content-type': 'application/x-www-form-urlencoded'
+						},
+						data: {
+							token: token,
+							orderId: this.orderList[index].orderId
+						},
+						success: function (res) {
+							console.log(res.data);
+							if (res.statusCode == 200) {
+								_this.updateOrders(_this.tabCur)
+							} else {
+								uni.showToast({title: '删除失败，请稍后再试', duration: 3000, icon: 'none'})
+							}
+						}
+					})
+				} else if (this.orderList[index].status == 1) {
+					uni.showToast({title: '书本等着你取啦！不能取消了', duration: 3000, icon: 'none'})
+				} else if (this.orderList[index].status == 2) {
+					uni.showToast({title: '无法取消已完成订单', duration: 3000, icon: 'none'})
+				}
 			},
-			receiveConfirm(index) {
-				this.orderList[index].status = 2
+			onPostDetail(index) {
+				
+			},
+			onPostDelete(index, bookName) {
+				this.deletingIndex = index
+				this.deletingName = bookName
+				this.actionSheetTips = '确认下架《' + this.deletingName + '》吗？'
+				this.actionSheetItems = [{
+					text: "确认",
+					color: "#E64340",
+				}]
+				this.showActionSheet = true
+			},
+			onSendConfirm(index) {
+				uni.navigateTo({
+					url: '../order/send?orderId=' + this.orderList[index].orderId
+				})
+			},
+			onReceiveConfirm(index) {
+				var _this = this
+				uni.showModal({
+					title: '提示',
+					content: '确认已取到书本',
+					success: function (res) {
+						if (res.confirm) {
+							_this.receiveConfirm(_this.orderList[index].orderId)
+						} else if (res.cancel) {
+							console.log('取消已取货');
+						}
+					}
+				})
+			},
+			onTouchLong(index) {
+				if (this.tabCur == 0) {
+					uni.vibrateShort({})
+					this.cancelingIndex = index
+					this.actionSheetTips = '确认取消订单吗？'
+					this.actionSheetItems = [{
+						text: "确认",
+						color: "#E64340",
+					}]
+					this.showActionSheet = true
+				}
+			},
+			receiveConfirm(orderId) {
+				var _this = this
+				var token = uni.getStorageSync('token')
+				this.isUploading = true
+				uni.request({
+					url: this.global.serverUrl + "order",
+					method: 'PUT',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						token: token,
+						orderId: orderId,
+						action: 'receive'
+					},
+					success: function (res) {
+						if (res.statusCode == 200) {
+							_this.updateOrders(_this.tabCur)
+						} else {
+							console.log('request faild')
+						}
+					}
+				})
+			},
+			actionConfirm() {
+				switch (this.tabCur) {
+					case 0:
+						this.orderCancel(this.cancelingIndex)
+						this.closeActionSheet()
+						break;
+					case 1:
+						break;
+					case 2:
+						this.postDelete(this.deletingIndex)
+						this.closeActionSheet()
+						break;
+				}
+			},
+			closeActionSheet() {
+				this.showActionSheet = false
 			}
 		}
 	}
@@ -217,6 +355,7 @@
 		flex-direction: column;
 		align-items: center;
 		margin-top: 100rpx;
+		margin-bottom: 20rpx;
 	}
 	.order-empty {
 		color: #CBCBCB;

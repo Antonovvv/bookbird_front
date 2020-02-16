@@ -1,6 +1,6 @@
 <template>
 	<view class="order">
-		<view class="order-box">
+		<view class="order-box" @touchstart="onTouchLong" @touchend="endTouchLong">
 			<image :src="item.imageUrl" class="order-image" mode="aspectFill"/>
 			<view class="order-info" v-if="mode != 'post'">
 				<text class="order-title">{{item.bookName}}</text>
@@ -10,7 +10,7 @@
 			<view class="post-info" v-if="mode == 'post'">
 				<text class="post-title">{{item.bookName}}</text>
 				<view class="cu-tag round post-info-new">{{newLevel[item.new]}}</view>
-				<view class="post-info-price">￥{{(item.sale).toFixed(2)}}</view>
+				<view class="post-info-price">￥{{(item.sale / 100).toFixed(2)}}</view>
 			</view>
 			<view class="order-steps" v-if="mode == 'dynamic'">
 				<view class="step" v-for="(step, index) in dynamicSteps" :key="index">
@@ -63,7 +63,8 @@
 				dynamicSteps: ['已下单/待配送', '已送达/待收货', '订单已完成'],
 				orderStatus: ['待配送', '待取货', '交易完成'],
 				switchAnimation: {},
-				detailOn: false
+				detailOn: false,
+				timer: 0
 			}
 		},
 		methods: {
@@ -80,6 +81,16 @@
 			},
 			postDelete() {
 				this.$emit('post-delete')
+			},
+			onTouchLong() {
+				var _this = this
+				clearTimeout(this.timer)
+				this.timer = setTimeout(function() {
+					_this.$emit('long-touch')
+				}, 1000)
+			},
+			endTouchLong() {
+				clearTimeout(this.timer)
 			},
 			detailSwitch() {
 				var animation = uni.createAnimation({

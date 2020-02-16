@@ -14,7 +14,7 @@
 					<text class="book-info-text">出版时间:{{bookResult.pubdate}}</text>
 				</view>
 				<view class="confirm-button">
-					<button class="cu-btn round cancle" @tap="cancle">不是</button>
+					<button class="cu-btn round cancel" @tap="cancel">不是</button>
 					<button class="cu-btn round confirm" @tap="confirm">是</button>
 				</view>
 			</view>
@@ -30,7 +30,7 @@
 				<!--已选图片-->
 				<view class="image-box" @tap="viewImage" v-if="postImage">
 					<image :src="postImage" mode="aspectFill" class="picture"></image>
-					<view class="cu-tag bg-red cancle-tag" @tap.stop="deleteImage">
+					<view class="cu-tag bg-red cancel-tag" @tap.stop="deleteImage">
 						<text class='cuIcon-close'></text>
 					</view>
 				</view>
@@ -49,7 +49,7 @@
 				</view>
 				<view class="info-price-bar">
 					<text class="info-price-text">价格</text>
-					<text class="info-price">￥{{sellPrice.toFixed(2)}}</text>
+					<text class="info-price">￥{{(sellPrice / 100).toFixed(2)}}</text>
 				</view>
 			</view>
 			<view class="post-confirm">
@@ -81,7 +81,7 @@
 				backImageUrl: "",
 				newTags: ["九九新", "九成新", "七成新", "五成新"],
 				newTagSelected: -1,
-				sellPrice: 5,
+				sellPrice: 500,
 				isUploading: false
 			}
 		},
@@ -110,7 +110,7 @@
 			hideModal() {
 				this.modalName = null
 			},
-			cancle() {
+			cancel() {
 				uni.navigateBack({})
 			},
 			confirm() {
@@ -281,7 +281,7 @@
 		color: #FFFFFF;
 	}
 	
-	.confirm-button .cancle {
+	.confirm-button .cancel {
 		width: 208rpx;
 		height: 80rpx;
 		background-color: #AAAAAA;
@@ -346,7 +346,7 @@
 		border: 2rpx solid;
 		border-color: #979797;
 		border-radius: 18rpx;
-		background-color: #D8D8D8;
+		background-color: #F0F0F0;
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
@@ -354,7 +354,6 @@
 		align-items: center;
 		color: #FFFFFF;
 	}
-	
 	.camera-box .camera-icon {
 		font-size: 100rpx;
 		align-self: center;
@@ -442,7 +441,7 @@
 		height: 100rpx;
 		background-color: #AAAAAA;
 		color: #FFFFFF;
-		font-size: 40rpx;
+		font-size: 42rpx;
 	}
 	.post-confirm .confirm-btn.allowed {
 		background-color: #FF6E78;

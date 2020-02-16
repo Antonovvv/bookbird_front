@@ -15,7 +15,7 @@
 						<view class="item-title" :class="item.valid?'':'invalid'">{{item.bookName}}</view>
 						<view class="item-info" :class="item.valid?'':'invalid'">{{item.author}} 著/{{item.publisher}}</view>
 						<view class="item-tags">
-							<view class="item-price" v-if="item.valid">￥{{item.sale.toFixed(2)}}</view>
+							<view class="item-price" v-if="item.valid">￥{{(item.sale).toFixed(2)}}</view>
 							<view class="item-addr" v-if="item.valid">
 								<text class="cuIcon-location"/>{{item.addr}}
 							</view>
@@ -37,7 +37,7 @@
 				</checkbox-group>
 			</view>
 			<view class="total-price" v-if="!inEdit">
-				合计:<text class="total">￥{{totalPrice.toFixed(2)}}</text> 
+				合计:<text class="total">￥{{(totalPrice / 100).toFixed(2)}}</text> 
 			</view>
 			<view v-if="!inEdit">
 				<button class="cu-btn round pay-button" @tap="pay">结算</button>
@@ -88,6 +88,7 @@
 							_this.cartList = res.data.cartList
 							for (let item of _this.cartList) {
 								item.imageUrl = _this.global.bucketUrl + item.imageName
+								item.sale = item.sale / 100
 							}
 						}
 						else if (res.statusCode == 204) {
@@ -211,17 +212,16 @@
 	}
 	
 	.item-checkbox {/*label中的checkbox*/
+		width: 92rpx;
 		padding: 0 20rpx;
 		display: flex;
 		align-items: center;
 	}
-	
 	checkbox.book-red[checked] .wx-checkbox-input,
 	checkbox.book-red.checked .uni-checkbox-input {
 		background-color: #FF6E78 !important;
 		border-color: #FF6E78 !important;
 	}
-	
 	checkbox.invalid::before {
 		content: "";
 	}
@@ -238,35 +238,34 @@
 		display: flex;
 		flex-direction: column;
 		padding-left: 20rpx;
+		width: calc(100% - 292rpx);
 	}
-	
 	.item-title {
 		margin-top: 60rpx;
 		font-size: 36rpx;
 		color: #727272;
 	}
-	
 	.item-info {
 		margin-top: 16rpx;
 		font-size: 24rpx;
 		color: #727272;
 	}
-	
 	.item-tags {
 		display: flex;
+		position: relative;
 	}
-	
 	.item-price {
 		font-size: 42rpx;
 		color: #FF6E78;
-		margin-top: 50rpx;
+		position: absolute;
+		top: 50rpx;
 	}
-	
 	.item-addr {
-		margin-top: 60rpx;
-		margin-left: 100rpx;
 		font-size: 28rpx;
 		color: #727272;
+		position: absolute;
+		top: 60rpx;
+		right: 20rpx;
 	}
 	
 	.item-invalid {
@@ -274,7 +273,6 @@
 		font-size: 28rpx;
 		margin-top: 55rpx;
 	}
-	
 	.item-title.invalid, .item-info.invalid {
 		color: #B1B1B1;
 	}

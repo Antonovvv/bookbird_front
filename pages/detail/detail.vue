@@ -7,7 +7,7 @@
 		
 		<view class="info-box">
 			<text class="info-title">{{postInfo.bookName}}</text>
-			<text class="info-sale">价格：￥{{postInfo.sale.toFixed(2)}}</text>
+			<text class="info-sale">价格：￥{{(postInfo.sale).toFixed(2)}}</text>
 			<view class="info-post">
 				<text>成色：{{newLevel[postInfo.new]}}</text>
 				<text>楼栋：{{postInfo.addr}}</text>
