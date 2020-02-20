@@ -32,7 +32,7 @@
 			</view>
 		</view>
 		<view class="order-detail" v-if="mode == 'deal'" :style="detailOn ? 'height:90rpx;' : ''">
-			<view class="detail-title">订单详情<view class="detail-switch" :animation="switchAnimation" @tap="detailSwitch">
+			<view class="detail-title" @click="detailSwitch">订单详情<view class="detail-switch" :animation="switchAnimation">
 				<text class="cuIcon-unfold"></text></view>
 			</view>
 			<view class="detail-box" v-if="detailOn">
@@ -265,7 +265,7 @@
 		transition-duration: 300ms;
 	}
 	.detail-title {
-		margin-left: 46rpx;
+		padding-left: 46rpx;
 		color: #CBCBCB;
 		font-size: 24rpx;
 		display: flex;

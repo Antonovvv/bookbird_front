@@ -3,10 +3,9 @@
 		<nav-bar fontColor="#727272">随便看看</nav-bar>
 		<view class="container" :style="{height:`${contentHeight}px`,width:`${sysWidth}px`}">
 			<movable-area class="move-area" :style="{height:`${3*sysHeight}px`,width:`${3*sysWidth}px`,top:`${-sysHeight}px`,left:`${-sysWidth}px` }">
-				<movable-view class="move-view" v-for="(item, index) in lookList" :key="item.cardId"
-				direction="all" :x="item.moveX" :y="item.moveY" :style="{zIndex:`${9999-item.cardId}`}"
-				out-of-bounds v-if="index <= number" :disabled="index != 0" :animation="item.animation"
-				@tap="detail(item)" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchend">
+				<movable-view class="move-view" v-for="(item, index) in lookList" :key="item.cardId" direction="all" :x="item.moveX" :y="item.moveY" 
+				:style="{zIndex:`${9999-item.cardId}`}" out-of-bounds v-if="index <= number" :disabled="index != 0" :animation="item.animation"
+				@tap="detail(item)" @touchstart="touchStart" @touchmove.passive="touchMove" @touchend="touchend">
 					<view :animation="animationData[index]"
 					:style="{transform:index < number ? `rotate(${rotate*index}deg) scale(${ 1-(1-scale.x)*index },${ 1-(1-scale.y)*index }) skew(${skew.x*index}deg, ${skew.y*index}deg) translate(${translate.x*index}px, ${translate.y*index}px)` 
 					: `rotate(${rotate*(number-1)}deg) scale(${ 1-(1-scale.x)*(number-1) },${ 1-(1-scale.y)*(number-1) }) skew(${skew.x*(number-1)}deg, ${skew.y*(number-1)}deg) translate(${translate.x*(number-1)}px, ${translate.y*(number-1)}px)`,
@@ -24,10 +23,10 @@
 </template>
 
 <script>
-	import clCardDel from "@/components/cl-cardDel/cl-cardDel";
+	import cardAnimation from "@/components/card-animation/card-animation.js";
 	import cardBox from "./card-box.vue"
 	export default {
-		mixins: [clCardDel],
+		mixins: [cardAnimation],
 		components: {cardBox},
 		data() {
 			return {
@@ -66,6 +65,11 @@
 								item.animation = false
 							}
 							_this.lookList = [..._this.lookList, ...dataList]
+							/*setTimeout(function() {
+								_this.moveX = -10
+								_this.moveY = 1
+								_this._show(0)
+							}, 300)*/
 						} else {
 							uni.navigateBack({})
 						}
@@ -134,7 +138,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		position: absolute;
+		position: fixed;
 		background-color: #FFFFFF;
 	}
 	.move-area {

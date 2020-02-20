@@ -77,6 +77,8 @@
 							uni.showToast({
 								title: '订单提交成功'
 							})
+						} else if (res.statusCode == 404) {
+							uni.showToast({title: "书本已经被买走啦！", duration: 3000, icon: 'none'})
 						} else {
 							console.log('request faild')
 						}

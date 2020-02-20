@@ -88,6 +88,7 @@
 	.card-box {
 		width: 666rpx;
 		height: 800rpx;
+		background-color: #FFFFFF;
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;

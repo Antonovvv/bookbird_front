@@ -3,40 +3,44 @@
 		<nav-bar fontColor="#727272">买买卖卖</nav-bar>
 		<view class="action-tab">
 			<view class="action-tab-item" :class="index==tabCur ? 'selected' : ''" :id="'tab' + index"
-			v-for="(item, index) in actionTabs" :key="index" @tap="tabSelect(index)">{{item}}
+			v-for="(item, index) in actionTabs" :key="index" @tap="line.tabSelect" :data-index="index" :data-info="tabsInfo[index]">{{item}}
 			</view>
-			<view class="cur-line" :style="'left:' + curPositon + 'px;'"/>
+			<view class="cur-line" :style="'left:' + curInitPositon + 'px;'" :data-width="lineWidth"/>
 		</view>
-		<view class="order-list" v-if="tabCur <= 1">
-			<order-box v-for="(item, index) in orderList" :key="index" :item="item" mode="deal"
-			@send-confirm="onSendConfirm(index)" @receive-confirm="onReceiveConfirm(index)" @long-touch="onTouchLong(index)"></order-box>
-		</view>
-		<view class="order-list" v-if="tabCur == 2">
-			<order-box v-for="(item, index) in orderList" :key="index" :item="item" mode="post"
-			@post-detail="onPostDetail(index)" @post-delete="onPostDelete(index, item.bookName)"></order-box>
-			<view class="order-empty" v-if="orderList.length == 0">快去扫码上传第一本书吧~</view>
-		</view>
-		<action-sheet :show="showActionSheet" :tips="actionSheetTips" :item-list="actionSheetItems"
+		
+		<swiper :current="tabCur" @change="line.swiperChange" :style="{height: scrollHeight + `rpx`}" class="swiper" duration="300">
+			<swiper-item>
+				<mescroll-item ref="item0" :tab="0" :i="0" :index="tabCur" @onTouchLong="showActionSheet"></mescroll-item>
+			</swiper-item>
+			<swiper-item>
+				<mescroll-item ref="item1" :tab="1" :i="1" :index="tabCur"></mescroll-item>
+			</swiper-item>
+			<swiper-item>
+				<mescroll-item ref="item2" :tab="2" :i="2" :index="tabCur" @onPostDelete="showActionSheet"></mescroll-item>
+			</swiper-item>
+		</swiper>
+		
+		<action-sheet :show="actionSheetShow" :tips="actionSheetTips" :item-list="actionSheetItems"
 		@click="actionConfirm" @cancel="closeActionSheet"></action-sheet>
 	</view>
 </template>
 
 <script>
-	import orderBox from './order-box.vue'
 	import actionSheet from '../../components/actionsheet/actionsheet.vue'
+	import mescrollItem from "./mescroll-item.vue"
 	export default {
-		components: {orderBox, actionSheet},
+		components: {actionSheet, mescrollItem},
 		data() {
 			return {
-				tabCur: 0,
-				curPositon: 0,
+				tabCur: -1,
+				curInitPositon: 0,
 				actionTabs: ['我买到的', '我卖出的', '我发布的'],
 				tabsInfo: [],
-				orderList: [],
 				deletingIndex: 0,
 				cancelingIndex: 0,
 				deletingName: '',
-				showActionSheet: false,
+				actionSheetShow: false,
+				actionSheetType: '',
 				actionSheetTips: '',
 				actionSheetItems: [{
 					text: "确认",
@@ -45,279 +49,131 @@
 			}
 		},
 		computed: {
+			lineWidth() {
+				return uni.upx2px(100)
+			},
+			scrollHeight() {
+				return 667 * 2 - 88 - uni.getSystemInfoSync()['statusBarHeight'] * 2
+			},
+			scrollTop() {
+				return 88 + uni.getSystemInfoSync()['statusBarHeight'] * 2
+			}
 		},
 		onLoad(option) {
 			var tab = Number(option.tab)
 			this.tabCur = tab
-		},
-		onShow() {
-			this.updateOrders(this.tabCur)
-		},
-		onReady() {
 			const query = uni.createSelectorQuery().in(this);
 			for (let i in this.actionTabs) {
 				query.select('#tab' + i).boundingClientRect()
 			}
 			query.exec((res) => {
-				console.log(res);
 				this.tabsInfo = res
-				this.curPositon = this.tabsInfo[this.tabCur].left + (this.tabsInfo[this.tabCur].width - uni.upx2px(100)) / 2
+				this.curInitPositon = this.tabsInfo[tab].left + (this.tabsInfo[tab].width - this.lineWidth) / 2
 			})
 		},
+		onShow() {
+		},
+		onReady() {
+		},
 		methods: {
-			tabSelect(index) {
-				this.tabCur = index
-				this.curPositon = this.tabsInfo[this.tabCur].left + (this.tabsInfo[this.tabCur].width - uni.upx2px(100)) / 2
-				var _this = this
-				setTimeout(function() {_this.updateOrders(index)}, 300)
+			tabSelect(e) {
+				this.tabCur = e.index
 			},
-			updateOrders(tab) {
-				uni.showLoading({})
-				this.orderList = []
-				switch (tab) {
-					case 0:
-						var _this = this
-						var token = uni.getStorageSync('token')
-						if (token) {
-							uni.request({
-								url: this.global.serverUrl + "user/orders",
-								data: {
-									token: token,
-									orderType: 'bought'
-								},
-								success: function (res) {
-									if (res.statusCode == 200) {
-										console.log(res.data.orderList);
-										_this.orderList = res.data.orderList
-										for (let item of _this.orderList) {
-											item.imageUrl = _this.global.bucketUrl + item.imageName
-											item.identity = 'buyer'
-										}
-									}
-									else if (res.statusCode == 204) {
-										uni.showToast({title: '没买过', duration: 3000, icon: 'none'})
-									}
-									else if (res.statusCode == 403) {
-										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
-									}
-								}
-							})
-						} else {
-							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
-						}
-						uni.hideLoading()
+			swiperChange(e) {
+				this.tabCur = e.index
+			},
+			showActionSheet(e) {
+				this.actionSheetType = e.type
+				switch (e.type) {
+					case 'cancel':
+						this.actionSheetTips = '确认取消订单吗？'
+						this.actionSheetItems = [{
+							text: "确认",
+							color: "#E64340",
+						}]
+						this.actionSheetShow = true
 						break;
-					case 1:
-						var _this = this
-						var token = uni.getStorageSync('token')
-						if (token) {
-							uni.request({
-								url: this.global.serverUrl + "user/orders",
-								data: {
-									token: token,
-									orderType: 'sold'
-								},
-								success: function (res) {
-									if (res.statusCode == 200) {
-										console.log(res.data.orderList);
-										_this.orderList = res.data.orderList
-										for (let item of _this.orderList) {
-											item.imageUrl = _this.global.bucketUrl + item.imageName
-											item.identity = 'seller'
-										}
-									}
-									else if (res.statusCode == 204) {
-										uni.showToast({title: '没卖过', duration: 3000, icon: 'none'})
-									}
-									else if (res.statusCode == 403) {
-										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
-									}
-								}
-							})
-						} else {
-							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
-						}
-						uni.hideLoading()
-						break;
-					case 2:
-						uni.showLoading({})
-						var _this = this
-						var token = uni.getStorageSync('token')
-						if (token) {
-							uni.request({
-								url: this.global.serverUrl + "user/posts",
-								data: {
-									token: token,
-									count: 100
-								},
-								success: function (res) {
-									if (res.statusCode == 200) {
-										console.log(res.data.postList);
-										_this.orderList = res.data.postList
-										for (let item of _this.orderList) {
-											item.imageUrl = _this.global.bucketUrl + item.imageName
-										}
-									}
-									else if (res.statusCode == 204) {
-										console.log('empty');
-									}
-									else if (res.statusCode == 403) {
-										uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
-									}
-								}
-							})
-						} else {
-							uni.showToast({title: '未登录', duration: 3000, icon: 'none'})	
-						}
-						uni.hideLoading()
-						break;
-					default:
-						uni.hideLoading()
+					case 'delete':
+						this.actionSheetTips = '确认下架《' + e.bookName + '》吗？'
+						this.actionSheetItems = [{
+							text: "确认",
+							color: "#E64340",
+						}]
+						this.actionSheetShow = true
 						break;
 				}
-			},
-			postDelete(index) {
-				var _this = this
-				var token = uni.getStorageSync('token')
-				uni.request({
-					url: this.global.serverUrl + "user/posts",
-					method: 'DELETE',
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					data: {
-						token: token,
-						deleteId: this.orderList[index].postId
-					},
-					success: function (res) {
-						console.log(res.data);
-						if (res.statusCode == 200) {
-							_this.updateOrders(2)
-						} else {
-							uni.showToast({title: '删除失败，请稍后再试', duration: 3000, icon: 'none'})
-						}
-					}
-				})
-			},
-			orderCancel(index) {
-				if (this.orderList[index].status == 0) {
-					var _this = this
-					var token = uni.getStorageSync('token')
-					uni.request({
-						url: this.global.serverUrl + "user/orders",
-						method: 'DELETE',
-						header: {
-							'content-type': 'application/x-www-form-urlencoded'
-						},
-						data: {
-							token: token,
-							orderId: this.orderList[index].orderId
-						},
-						success: function (res) {
-							console.log(res.data);
-							if (res.statusCode == 200) {
-								_this.updateOrders(_this.tabCur)
-							} else {
-								uni.showToast({title: '删除失败，请稍后再试', duration: 3000, icon: 'none'})
-							}
-						}
-					})
-				} else if (this.orderList[index].status == 1) {
-					uni.showToast({title: '书本等着你取啦！不能取消了', duration: 3000, icon: 'none'})
-				} else if (this.orderList[index].status == 2) {
-					uni.showToast({title: '无法取消已完成订单', duration: 3000, icon: 'none'})
-				}
-			},
-			onPostDetail(index) {
-				
-			},
-			onPostDelete(index, bookName) {
-				this.deletingIndex = index
-				this.deletingName = bookName
-				this.actionSheetTips = '确认下架《' + this.deletingName + '》吗？'
-				this.actionSheetItems = [{
-					text: "确认",
-					color: "#E64340",
-				}]
-				this.showActionSheet = true
-			},
-			onSendConfirm(index) {
-				uni.navigateTo({
-					url: '../order/send?orderId=' + this.orderList[index].orderId
-				})
-			},
-			onReceiveConfirm(index) {
-				var _this = this
-				uni.showModal({
-					title: '提示',
-					content: '确认已取到书本',
-					success: function (res) {
-						if (res.confirm) {
-							_this.receiveConfirm(_this.orderList[index].orderId)
-						} else if (res.cancel) {
-							console.log('取消已取货');
-						}
-					}
-				})
-			},
-			onTouchLong(index) {
-				if (this.tabCur == 0) {
-					uni.vibrateShort({})
-					this.cancelingIndex = index
-					this.actionSheetTips = '确认取消订单吗？'
-					this.actionSheetItems = [{
-						text: "确认",
-						color: "#E64340",
-					}]
-					this.showActionSheet = true
-				}
-			},
-			receiveConfirm(orderId) {
-				var _this = this
-				var token = uni.getStorageSync('token')
-				this.isUploading = true
-				uni.request({
-					url: this.global.serverUrl + "order",
-					method: 'PUT',
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					data: {
-						token: token,
-						orderId: orderId,
-						action: 'receive'
-					},
-					success: function (res) {
-						if (res.statusCode == 200) {
-							_this.updateOrders(_this.tabCur)
-						} else {
-							console.log('request faild')
-						}
-					}
-				})
 			},
 			actionConfirm() {
-				switch (this.tabCur) {
-					case 0:
-						this.orderCancel(this.cancelingIndex)
+				switch (this.actionSheetType) {
+					case 'cancel':
+						var target = this.$refs.item0
+						target.orderCancel(target.cancelingIndex)
 						this.closeActionSheet()
 						break;
-					case 1:
-						break;
-					case 2:
-						this.postDelete(this.deletingIndex)
+					case 'delete':
+						var target = this.$refs.item2
+						target.postDelete(target.deletingIndex)
 						this.closeActionSheet()
 						break;
 				}
 			},
 			closeActionSheet() {
-				this.showActionSheet = false
+				this.actionSheetShow = false
 			}
 		}
 	}
 </script>
 
+<script module="line" lang="wxs">
+	var curPosition = 0
+	var tabCur = 0
+	function tabCurWatcher(newVal, oldVal, ins) {
+		console.log('tabCur:', newVal, oldVal)
+	}
+	function tabSelect(event, ins) {
+		var tab = ins.selectComponent('#' + event.target.id)	//当前点击的tab的ComponentDescriptor实例
+		var line = ins.selectComponent('.cur-line')		//line实例
+		var tabInfo = tab.getDataset().info
+		
+		curPosition = computedCur(tabInfo, line.getDataset().width)
+		line.setStyle({
+			"left": curPosition + "px"
+		})
+		
+		tabCur = tab.getDataset().index
+		tab.callMethod('tabSelect', {index: tabCur})	//改变页面中tabCur
+	}
+	function swiperChange(event, ins) {
+		if (event.detail.source == 'touch') {
+			var tab = ins.selectComponent('#tab' + event.detail.current)
+			var line = ins.selectComponent('.cur-line')
+			var tabInfo = tab.getDataset().info
+			
+			curPosition = computedCur(tabInfo, line.getDataset().width)
+			line.setStyle({
+				"left": curPosition + "px"
+			})
+			
+			tabCur = event.detail.current
+			ins.callMethod('swiperChange', {index: tabCur})
+		}
+	}
+	function computedCur(info, lineWidth) {
+		return info.left + (info.width - lineWidth) / 2
+	}
+	module.exports = {
+		curPosition: curPosition,
+		tabSelect: tabSelect,
+		swiperChange: swiperChange,
+		tabCurWatcher: tabCurWatcher
+	}
+</script>
+
 <style>
+	.swiper {
+		position: relative;
+	}
+	
 	.action-tab {
 		width: 100%;
 		background-color: #FFFFFF;
@@ -350,13 +206,6 @@
 		transition-duration: 300ms;
 	}
 	
-	.order-list {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin-top: 100rpx;
-		margin-bottom: 20rpx;
-	}
 	.order-empty {
 		color: #CBCBCB;
 		font-size: 32rpx;

@@ -221,7 +221,7 @@ export default {
 				//清除动画
 				this.animationData[0] = this.delanimation.export()
 				for (var i = 1; i < this.number; i++) {
-					this.animationData[i] = this.moveAnimation.export()
+					//this.animationData[i] = this.moveAnimation.export()
 				}
 				
 				this.delCard(this.moveX,this.moveY)
@@ -256,17 +256,52 @@ export default {
 				this.animationData[i] = this.endanimation.export()
 			}
 		},
+		_show(index) {
+			//移动card动画
+			let d = this.moveX*this.moveX + this.moveY*this.moveY
+			let y = this.moveY*this.delMoveD/Math.sqrt(d)
+			let x = this.moveX*this.delMoveD/Math.sqrt(d)
+			this.delanimation.translateX(x).translateY(y).step();
+			this.animationData[index] = this.delanimation.export()
+			setTimeout(() => {
+				//清除动画
+				this.animationData[index] = this.delanimation.export()
+				/*for (var i = 1; i < this.number; i++) {
+					this.animationData[i] = this.moveAnimation.export()
+				}*/
+				
+				this.delCard(this.moveX,this.moveY)
+				this.moveX = 0
+				this.moveY = 0
+				if (index + 1 < this.lookList.length) {
+					this.lookList[index + 1].moveX = 0
+					this.lookList[index + 1].moveY = 0
+				}
+			}, this.delTime)
+			
+			//其他card动画
+			let ratio = 1
+			for (var i = 1; i < this.number; i++) {
+				
+				if(this.rotate!=0) this.endanimation.rotate( this.rotate*(i-ratio) )
+				if(this.opacity!=1) this.endanimation.opacity( 1-(1-this.opacity)*(i-ratio) )
+				if(this.scale.x!=1) this.endanimation.scaleX( 1-(1-this.scale.x)*(i-ratio) )
+				if(this.scale.y!=1) this.endanimation.scaleY( 1-(1-this.scale.y)*(i-ratio) )
+				if(this.skew.x!=0) this.endanimation.skewX( this.skew.x*(i-ratio) )
+				if(this.skew.y!=0) this.endanimation.skewY( this.skew.y*(i-ratio) )
+				if(this.translate.x!=0) this.endanimation.translateX( this.translate.x*(i-ratio) )
+				if(this.translate.y!=0) this.endanimation.translateY( this.translate.y*(i-ratio) )
+				
+				this.endanimation.step()
+				this.animationData[i] = this.endanimation.export()
+			}
+		},
 		delCard(){
 			console.log(this.lookList[0])
 		},
 		calcAngleDegrees(x, y) {
 			return Math.atan2(y, x) * 180 / Math.PI + 90;
 		}
-	},
-	watch:{
-			
-			
-			
 	},
 	watch:{
 		number:{

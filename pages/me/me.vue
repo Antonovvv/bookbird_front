@@ -31,7 +31,7 @@
 		<view class="dynamic-title">动态</view>
 		<view class="dynamic-list">
 			<order-box v-for="(item, index) in dynamicList" :key="index" :item="item" mode="dynamic"
-			@send-confirm="sendConfirm(index)" @receive-confirm="receiveConfirm(index)"></order-box>
+			@send-confirm="onSendConfirm(index)" @receive-confirm="onReceiveConfirm(index)"></order-box>
 		</view>
 	</view>
 </template>
@@ -98,13 +98,47 @@
 					uni.showToast({title: '未登录', duration: 3000, icon: 'none'})
 				}
 			},
-			sendConfirm(index) {
-				this.dynamicList[0].status = 1
-				this.dynamicList[1].status = 1
+			onSendConfirm(index) {
+				uni.navigateTo({
+					url: '../order/send?orderId=' + this.dynamicList[index].orderId
+				})
 			},
-			receiveConfirm(index) {
-				this.dynamicList[0].status = 2
-				this.dynamicList[1].status = 2
+			onReceiveConfirm(index) {
+				var _this = this
+				uni.showModal({
+					title: '提示',
+					content: '确认已取到书本',
+					success: function (res) {
+						if (res.confirm) {
+							_this.receiveConfirm(_this.dynamicList[index].orderId)
+						} else if (res.cancel) {
+							console.log('取消已取货');
+						}
+					}
+				})
+			},
+			receiveConfirm(orderId) {
+				var _this = this
+				var token = uni.getStorageSync('token')
+				uni.request({
+					url: this.global.serverUrl + "order",
+					method: 'PUT',
+					header: {
+						'content-type': 'application/x-www-form-urlencoded'
+					},
+					data: {
+						token: token,
+						orderId: orderId,
+						action: 'receive'
+					},
+					success: function (res) {
+						if (res.statusCode == 200) {
+							_this.updateDynamic()
+						} else {
+							uni.showToast({title: '请求失败，请稍后再试', duration: 3000, icon: 'none'})
+						}
+					}
+				})
 			}
 			/*tabSelect(index) {
 				this.tabCur = index
