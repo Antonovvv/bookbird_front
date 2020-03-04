@@ -81,7 +81,7 @@
 				backImageUrl: "",
 				newTags: ["九九新", "九成新", "七成新", "五成新"],
 				newTagSelected: -1,
-				sellPrice: 500,
+				sellPrice: 1,
 				isUploading: false
 			}
 		},

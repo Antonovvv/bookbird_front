@@ -59,6 +59,7 @@
 				this.timeIndex = e.detail.value
 			},
 			orderSubmit() {
+				uni.showLoading({})
 				var _this = this
 				var token = uni.getStorageSync('token')
 				uni.request({
@@ -73,15 +74,36 @@
 						deadline: this.arriveTimes[this.timeIndex]
 					},
 					success: function (res) {
+						uni.hideLoading()
 						if (res.statusCode == 201) {
-							uni.showToast({
-								title: '订单提交成功'
-							})
+							console.log(res.data.params);
+							_this.requestPayment(res.data.params)
+							//uni.showToast({title: '订单提交成功'})
 						} else if (res.statusCode == 404) {
 							uni.showToast({title: "书本已经被买走啦！", duration: 3000, icon: 'none'})
 						} else {
-							console.log('request faild')
+							uni.showToast({title: "发生了一些错误，请稍后重试", duration: 3000, icon: 'none'})
+							console.log('Error Code:' + res.statusCode)
 						}
+					},
+					fail: function (error) {
+						uni.hideLoading()
+						uni.showToast({title: "发起支付失败，请稍后重试", duration: 3000, icon: 'none'})
+					}
+				})
+			},
+			requestPayment(params) {
+				uni.requestPayment({
+					timeStamp: params.timeStamp,
+					nonceStr: params.nonceStr,
+					package: params.package,
+					signType: 'MD5',
+					paySign: params.paySign,
+					success: function (res) {
+						console.log(res);
+					},
+					fail: function (error) {
+						console.log(error);
 					}
 				})
 			},
@@ -89,7 +111,8 @@
 				if (this.timeIndex == -1) {
 					uni.showToast({title: "请选择时间", duration: 3000, icon: 'none'})
 				} else {
-					this.showActionSheet = true
+					//this.showActionSheet = true	//测试用，模拟调起支付
+					this.orderSubmit()
 				}
 			},
 			payConfirm() {

@@ -79,7 +79,7 @@
 								}
 								setTimeout(function() {_this.mescroll.endSuccess()}, 300)
 							} else if (res.statusCode == 204) {
-								
+								setTimeout(function() {_this.mescroll.endSuccess()}, 300)
 							} else if (res.statusCode == 403) {
 								uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
 								setTimeout(function() {_this.mescroll.endErr()}, 300)
@@ -112,7 +112,7 @@
 								}
 								setTimeout(function() {_this.mescroll.endSuccess()}, 300)
 							} else if (res.statusCode == 204) {
-								
+								setTimeout(function() {_this.mescroll.endSuccess()}, 300)
 							} else if (res.statusCode == 403) {
 								uni.showToast({title: 'token过期，请重新进入小程序', duration: 3000, icon: 'none'})
 								setTimeout(function() {_this.mescroll.endErr()}, 300)

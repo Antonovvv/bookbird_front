@@ -37,7 +37,7 @@
 				</checkbox-group>
 			</view>
 			<view class="total-price" v-if="!inEdit">
-				合计:<text class="total">￥{{(totalPrice / 100).toFixed(2)}}</text> 
+				合计:<text class="total">￥{{(totalPrice).toFixed(2)}}</text> 
 			</view>
 			<view v-if="!inEdit">
 				<button class="cu-btn round pay-button" @tap="pay">结算</button>
