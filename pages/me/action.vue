@@ -10,7 +10,8 @@
 		
 		<swiper :current="tabCur" @change="line.swiperChange" :style="{height: scrollHeight + `rpx`}" class="swiper" duration="300">
 			<swiper-item>
-				<mescroll-item ref="item0" :tab="0" :i="0" :index="tabCur" @onTouchLong="showActionSheet"></mescroll-item>
+				<!--<mescroll-item ref="item0" :tab="0" :i="0" :index="tabCur" @onTouchLong="showActionSheet"></mescroll-item>-->
+				<mescroll-item ref="item0" :tab="0" :i="0" :index="tabCur"></mescroll-item>
 			</swiper-item>
 			<swiper-item>
 				<mescroll-item ref="item1" :tab="1" :i="1" :index="tabCur"></mescroll-item>

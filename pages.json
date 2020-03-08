@@ -39,6 +39,9 @@
         }, {
             "path": "pages/order/send",
             "style": {}
+        }, {
+            "path": "pages/order/order",
+            "style": {}
         }
     ],
 	"globalStyle": {
@@ -80,8 +83,8 @@
 		"list": [
 			{
 				"name": "now", //模式名称
-				"path": "pages/me/action", //启动页面，必选
-				"query": "tab=0" //启动参数，在页面的onLoad函数里面得到
+				"path": "pages/order/order", //启动页面，必选
+				"query": "" //启动参数，在页面的onLoad函数里面得到
 			}
 		]
 	}

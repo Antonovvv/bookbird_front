@@ -1,6 +1,7 @@
 <template>
 	<view class="order">
-		<view class="order-box" @touchstart="onTouchLong" @touchend="endTouchLong">
+		<!--<view class="order-box" @touchstart="onTouchLong" @touchend="endTouchLong">-->
+		<view class="order-box" @tap="boxClick">
 			<image :src="item.imageUrl" class="order-image" mode="aspectFill"/>
 			<view class="order-info" v-if="mode != 'post'">
 				<text class="order-title">{{item.bookName}}</text>
@@ -50,7 +51,9 @@
 		props: {
 			item: {
 				type: Object,
-				default: function () {return {}}
+				default: function () {return {
+					
+				}}
 			},
 			mode: {
 				type: String,
@@ -81,6 +84,18 @@
 			},
 			postDelete() {
 				this.$emit('post-delete')
+			},
+			boxClick() {
+				switch (this.mode) {
+					case 'deal':
+					case 'dynamic':
+						uni.navigateTo({
+							url: '../order/order?id=' + this.item.orderId
+						})
+						break;
+					case 'post':
+						break;
+				}
 			},
 			onTouchLong() {
 				var _this = this
