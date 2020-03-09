@@ -5,8 +5,8 @@
 			<image :src="item.imageUrl" class="order-image" mode="aspectFill"/>
 			<view class="order-info" v-if="mode != 'post'">
 				<text class="order-title">{{item.bookName}}</text>
-				<view class="order-info-time"><text class="cuIcon-time" style="margin-right: 10rpx;"/>{{item.deadline}}</view>
-				<view class="order-info-addr"><text class="cuIcon-location" style="margin-right: 10rpx;"/>{{item.addr}}</view>
+				<view class="order-info-time"><text class="cuIcon-time" style="margin-right: 8rpx;"/>{{item.deadline}}</view>
+				<view class="order-info-addr"><text class="cuIcon-location" style="margin-right: 8rpx;"/>{{item.addr}}</view>
 			</view>
 			<view class="post-info" v-if="mode == 'post'">
 				<text class="post-title">{{item.bookName}}</text>
@@ -32,6 +32,7 @@
 				<button class="cu-btn round delete-button" @tap="postDelete">下架</button>
 			</view>
 		</view>
+		<!--订单卡片底部详情抽屉-->
 		<view class="order-detail" v-if="mode == 'deal'" :style="detailOn ? 'height:90rpx;' : ''">
 			<view class="detail-title" @click="detailSwitch">订单详情<view class="detail-switch" :animation="switchAnimation">
 				<text class="cuIcon-unfold"></text></view>
@@ -90,7 +91,7 @@
 					case 'deal':
 					case 'dynamic':
 						uni.navigateTo({
-							url: '../order/order?id=' + this.item.orderId
+							url: '../order/order?orderId=' + this.item.orderId
 						})
 						break;
 					case 'post':

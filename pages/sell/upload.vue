@@ -29,14 +29,12 @@
 			<!--布局-->
 				<!--已选图片-->
 				<view class="image-box" @tap="viewImage" v-if="postImage">
-					<image :src="postImage" mode="aspectFill" class="picture"></image>
-					<view class="cu-tag bg-red cancel-tag" @tap.stop="deleteImage">
-						<text class='cuIcon-close'></text>
-					</view>
+					<image :src="postImage" mode="aspectFill" class="picture"/>
+					<view class="cu-tag bg-red" @tap.stop="deleteImage"><text class='cuIcon-close'/></view>
 				</view>
 				<!--相机图标-->
 				<view class="camera-box" @tap="chooseImage" v-if="!postImage">
-					<text class="cuIcon-cameraadd camera-icon"></text>
+					<text class="cuIcon-cameraadd camera-icon"/>
 				</view>
 			</view>
 			
