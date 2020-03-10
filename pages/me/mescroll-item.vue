@@ -169,7 +169,7 @@
 					var _this = this
 					var token = uni.getStorageSync('token')
 					uni.request({
-						url: this.global.serverUrl + "user/orders",
+						url: this.global.serverUrl + "order",
 						method: 'DELETE',
 						header: {
 							'content-type': 'application/x-www-form-urlencoded'

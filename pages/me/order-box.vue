@@ -15,16 +15,16 @@
 			</view>
 			<view class="order-steps" v-if="mode == 'dynamic'">
 				<view class="step" v-for="(step, index) in dynamicSteps" :key="index">
-					<text class="step-icon" :class="item.status >= index ? 'cuIcon-roundcheck' : 'icon-undone'" style="margin-right: 12rpx;"/>
-					<text class="step-done" :class="item.status == index ? 'step-now' : ''" v-if="item.status >= index">{{step}}</text>
-					<button class="cu-btn round undone-button" v-if="index == 1 && item.status == 0 && item.identity == 'seller'" @tap="sendConfirm">确认已送达</button>
-					<button class="cu-btn round undone-button" v-if="index == 2 && item.status == 1 && item.identity == 'buyer'" @tap="receiveConfirm">确认已收货</button>
+					<text class="step-icon" :class="item.status > index ? 'cuIcon-roundcheck' : 'icon-undone'" style="margin-right: 12rpx;"/>
+					<text class="step-done" :class="item.status == (index + 1) ? 'step-now' : ''" v-if="item.status > index">{{step}}</text>
+					<button class="cu-btn round undone-button" v-if="index == 1 && item.status == 1 && item.identity == 'seller'" @tap="sendConfirm">确认已送达</button>
+					<button class="cu-btn round undone-button" v-if="index == 2 && item.status == 2 && item.identity == 'buyer'" @tap="receiveConfirm">确认已收货</button>
 				</view>
 			</view>
 			<view class="order-status" v-if="mode == 'deal'">
-				<view class="status">{{orderStatus[item.status]}}</view>
-				<button class="cu-btn round confirm-button" v-if="item.status == 0 && item.identity == 'seller'" @tap="sendConfirm">确认已送达</button>
-				<button class="cu-btn round confirm-button" v-if="item.status == 1 && item.identity == 'buyer'" @tap="receiveConfirm">确认已收货</button>
+				<view class="status">{{item.status > 0 ? orderStatus[item.status] : ''}}</view>
+				<button class="cu-btn round confirm-button" v-if="item.status == 1 && item.identity == 'seller'" @tap="sendConfirm">确认已送达</button>
+				<button class="cu-btn round confirm-button" v-if="item.status == 2 && item.identity == 'buyer'" @tap="receiveConfirm">确认已收货</button>
 				<view class="price">￥{{(item.sale / 100).toFixed(2)}}</view>
 			</view>
 			<view class="order-action" v-if="mode == 'post'">
@@ -40,7 +40,7 @@
 			<view class="detail-box" v-if="detailOn">
 				<view class="detail-info">
 					<text>订单编号:{{item.orderId}}</text>
-					<text>交易时间:{{item.orderTime}}</text>
+					<text>交易时间:{{item.dealTime}}</text>
 				</view>
 			</view>
 		</view>

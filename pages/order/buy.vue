@@ -77,7 +77,7 @@
 						uni.hideLoading()
 						if (res.statusCode == 201) {
 							console.log(res.data.params);
-							_this.requestPayment(res.data.params)
+							_this.requestPayment(res.data.params, res.data.orderId)
 							//uni.showToast({title: '订单提交成功'})
 						} else if (res.statusCode == 404) {
 							uni.showToast({title: "书本已经被买走啦！", duration: 3000, icon: 'none'})
@@ -92,7 +92,7 @@
 					}
 				})
 			},
-			requestPayment(params) {
+			requestPayment(params, orderId) {
 				uni.requestPayment({
 					timeStamp: params.timeStamp,
 					nonceStr: params.nonceStr,
@@ -104,6 +104,11 @@
 					},
 					fail: function (error) {
 						console.log(error);
+					},
+					complete: function () {	//发起支付后跳转至订单页面
+						uni.redirectTo({
+							url: './order?orderId=' + orderId
+						})
 					}
 				})
 			},

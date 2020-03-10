@@ -17,19 +17,20 @@
 					<view class="book-info">{{postInfo.author}} 著/{{postInfo.publisher}}</view>
 					<view class="post-price">￥{{(postInfo.sale / 100).toFixed(2)}}</view>
 				</view>
-				<view class="prepay-info">
+				<view class="prepay-info" v-if="orderInfo.isEffective">
 					<text style="font-size: 36rpx;">待支付</text>
 					<view class="prepay-time">
-						还剩<countdown :time="orderInfo.remainTime" :hours="false" :isColon="false" :colonSize="20" :size="20" :height="28"
+						还剩<countdown :time="orderInfo.remainTime" :hours="false" :isColon="false" :colonSize="20" :size="20" :height="28"	@end="orderRefresh"
 						color="#FFF" colonColor="#FFF" bcolor="transparent" bgcolor="transparent" style="margin: 0 2rpx;"/>自动关闭
 					</view>
 					<image src="../../static/tabbar/shop_icon.png" class="decoration-1" mode="aspectFill" :animation="decorationAnimation[0]"/>
 					<image src="../../static/tabbar/sell_icon.png" class="decoration-2" mode="aspectFill" :animation="decorationAnimation[1]"/>
 				</view>
+				<view class="order-closed" v-if="!orderInfo.isEffective">订单已关闭</view>
 			</view>
-			<view class="prepay-action">
+			<view class="prepay-action" v-if="orderInfo.isEffective">
 				<button class="cu-btn round cancel-button" @tap="orderCancel">取消订单</button>
-				<button class="cu-btn round confirm-button" @tap="requestPayment">继续支付</button>
+				<button class="cu-btn round confirm-button" @tap="payAgain">继续支付</button>
 			</view>
 		</view>
 		<!--已支付状态-->
@@ -55,12 +56,17 @@
 					<view class="cu-tag" @tap.stop="deleteImage"><text class='cuIcon-close'/></view>
 				</view>
 				<view class="camera-box" @tap="chooseImage" v-if="!orderInfo.deliveryImage"><text class="cuIcon-camera"/></view>
-				<button class="cu-btn round confirm-button" v-if="orderInfo.status == 1 && orderInfo.identity == 'seller'">确认已送达</button>
-				<button class="cu-btn round confirm-button" v-if="orderInfo.status == 2 && orderInfo.identity == 'buyer'">确认已取书</button>
+				<button class="cu-btn round confirm-button" v-if="orderInfo.isEffective && orderInfo.status == 1 && orderInfo.identity == 'seller'">确认已送达</button>
+				<button class="cu-btn round confirm-button" v-if="orderInfo.isEffective && orderInfo.status == 2 && orderInfo.identity == 'buyer'">确认已取书</button>
 			</view>
 			<view class="order-box">
 				<view class="order-title">订单信息</view>
+				<view class="order-info">
+					<text>订单编号:{{orderId}}</text>
+					<text>交易时间:{{orderInfo.dealTime}}</text>
+				</view>
 			</view>
+			<button class="cu-btn round cancel-button" @tap="orderCancel" v-if="orderInfo.isEffective">取消订单</button>
 		</view>
 	</view>
 </template>
@@ -71,6 +77,7 @@
 		components: {countdown},
 		data() {
 			return {
+				orderId: '',
 				postInfo: {
 					bookName: "微积分",
 					imageUrl: '../../static/book.png',
@@ -81,7 +88,6 @@
 					publisher: '上海译文出版社'
 				},
 				orderInfo: {
-					orderId: 'xxx',
 					dealTime: '2020.3.8 03:08',
 					deadline: '3月15日22:00前',
 					status: 1,
@@ -103,6 +109,7 @@
 			}
 		},
 		onLoad(option) {
+			this.orderId = option.orderId
 			this.getOrderData(option.orderId)
 		},
 		methods: {
@@ -120,8 +127,8 @@
 						if (res.statusCode == 200) {
 							_this.postInfo = res.data.postInfo
 							_this.orderInfo = res.data.orderInfo
-							if (_this.orderInfo.status == 0) {
-								_this.decorationLoop()
+							if (_this.orderInfo.status == 0 && _this.orderInfo.isEffective) {
+								_this.decorationLoop()	//有效的待支付订单，使用动画
 							}
 						} else {
 							uni.showToast({title: '获取订单失败', duration: 3000, icon: 'none'})
@@ -129,7 +136,28 @@
 					}
 				})
 			},
+			payAgain() {
+				var _this = this
+				var token = uni.getStorageSync('token')
+				uni.request({
+					url: this.global.serverUrl + "order/prepay",
+					data: {
+						token: token,
+						orderId: this.orderId
+					},
+					success: function (res) {
+						console.log(res.data);
+						if (res.statusCode == 200) {
+							_this.orderInfo.prepayData = res.data.params
+							_this.requestPayment()
+						} else {
+							uni.showToast({title: '发起支付失败，请稍后重试', duration: 3000, icon: 'none'})
+						}
+					}
+				})
+			},
 			requestPayment() {
+				var _this = this
 				uni.requestPayment({
 					timeStamp: this.orderInfo.prepayData.timeStamp,
 					nonceStr: this.orderInfo.prepayData.nonceStr,
@@ -141,6 +169,9 @@
 					},
 					fail: function (error) {
 						console.log(error);
+					},
+					complete: function () {
+						_this.orderRefresh()
 					}
 				})
 			},
@@ -148,29 +179,37 @@
 				var _this = this
 				var token = uni.getStorageSync('token')
 				uni.request({
-					url: this.global.serverUrl + "user/orders",
+					url: this.global.serverUrl + "order",
 					method: 'DELETE',
 					header: {
 						'content-type': 'application/x-www-form-urlencoded'
 					},
 					data: {
 						token: token,
-						orderId: this.orderInfo.orderId
+						orderId: this.orderId
 					},
 					success: function (res) {
 						console.log(res.data);
 						if (res.statusCode == 200) {
+							_this.orderRefresh()
 							_this.orderInfo.prepayData = {}	//清空支付数据	TODO:支付前才请求支付数据
 							uni.showToast({title: '订单已取消'})
+						} else if (res.data.errMsg == 'Cancel not allowed') {	//该订单状态不允许取消
+							uni.showToast({title: '该订单无法取消', duration: 3000, icon: 'none'})
 						} else {
 							uni.showToast({title: '取消失败，请稍后再试', duration: 3000, icon: 'none'})
 						}
 					}
 				})
 			},
+			orderRefresh() {
+				this.postInfo = {}
+				this.orderInfo = {}
+				this.getOrderData(this.orderId)
+			},
 			chooseImage() {
 				var _this = this
-				if (!this.orderInfo.deliveryImage) {
+				if (this.orderInfo.identity == 'seller' && this.orderInfo.status == 1 && !this.orderInfo.deliveryImage) {
 					uni.chooseImage({
 						count: 1,
 						sourceType: ['camera', 'album'],
@@ -327,6 +366,18 @@
 		transform: rotate(24deg);
 		background-color: #FFFFFF;
 	}
+	.prepay-box .order-closed {
+		width: 100%;
+		height: 120rpx;
+		position: absolute;
+		bottom: 0;
+		background-color: #B1B1B1;
+		border-radius: 18rpx;
+		text-align: center;
+		color: #FFFFFF;
+		font-size: 36rpx;
+		padding-top: 36rpx;
+	}
 	
 	.prepay-action {
 		width: 100%;
@@ -398,6 +449,7 @@
 		border-radius: 18rpx;
 		margin: 28rpx auto;
 		padding: 22rpx 26rpx;
+		position: relative;
 	}
 	.delivery-box .delivery-title {
 		color: #FF6E78;
@@ -445,6 +497,16 @@
 		color: #FFFFFF;
 		font-size: 128rpx;
 	}
+	.delivery-box .confirm-button {
+		width: 196rpx;
+		height: 56rpx;
+		color: #FFFFFF;
+		background-color: #FF8F97;
+		padding: 0;
+		position: absolute;
+		bottom: 24rpx;
+		left: calc(50% - 98rpx);
+	}
 	
 	.container-formal .order-box {
 		width: 700rpx;
@@ -452,9 +514,27 @@
 		background-color: #FFFFFF;
 		border-radius: 18rpx;
 		margin: 0 auto;
-		padding: 22rpx 26rpx;
+		padding: 16rpx 26rpx;
 	}
 	.order-box .order-title {
 		color: #FF6E78;
+	}
+	.order-box .order-info {
+		margin-top: 12rpx;
+		display: flex;
+		flex-direction: column;
+		color: #CBCBCB;
+		font-size: 24rpx;
+	}
+	
+	.container-formal .cancel-button {
+		width: 196rpx;
+		height: 56rpx;
+		border: 2rpx solid #727272;
+		color: #727272;
+		background-color: #FFFFFF;
+		position: fixed;
+		bottom: 50rpx;
+		right: 50rpx;
 	}
 </style>
